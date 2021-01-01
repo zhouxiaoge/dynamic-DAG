@@ -116,37 +116,9 @@
             <version>${lombok.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.stephenc.high-scale-lib</groupId>
-            <artifactId>high-scale-lib</artifactId>
-            <version>1.1.4</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.hazelcast/hazelcast -->
-        <dependency>
-            <groupId>io.gridgo</groupId>
-            <artifactId>gridgo-kafka</artifactId>
-            <version>0.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-            <version>3.12</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-        </dependency>
-        <dependency>
-            <groupId>com.salesforce.kafka.test</groupId>
-            <artifactId>kafka-junit4</artifactId>
-            <version>${kafka.junit4.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka_2.11</artifactId>
-            <version>${kafka_2.11.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

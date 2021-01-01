@@ -6,14 +6,13 @@ import com.zhouxiaoge.dynamic.dag.tasks.TaskMapper;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskQueue;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskSorter;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskSubmitter;
-import io.gridgo.framework.impl.AbstractComponentLifecycle;
 import lombok.AllArgsConstructor;
 import org.joo.promise4j.Promise;
 
 import java.util.Arrays;
 
 @AllArgsConstructor
-public class DefaultTaskSubmitter extends AbstractComponentLifecycle implements TaskSubmitter {
+public class DefaultTaskSubmitter implements TaskSubmitter {
 
     private final TaskSorter taskSorter;
 
@@ -28,29 +27,24 @@ public class DefaultTaskSubmitter extends AbstractComponentLifecycle implements 
     @Override
     public Promise<TaskResult, Throwable> submitTasks(Batch<Task> batch) {
         return taskSorter.sortTasks(batch) //
-                         .map(this::mapTasks) //
-                         .then(taskRunner::runTasks);
+                .map(this::mapTasks) //
+                .then(taskRunner::runTasks);
     }
 
     private Batch<Job> mapTasks(Batch<TaskTopo> batch) {
         var jobs = Arrays.stream(batch.getBatch()) //
-                         .map(taskMapper::mapTask) //
-                         .toArray(size -> new Job[size]);
+                .map(taskMapper::mapTask) //
+                .toArray(size -> new Job[size]);
         return new DefaultBatch<>(batch.getId(), jobs);
     }
-    
+
     @Override
-    protected void onStart() {
-        taskRunner.start();
+    public void start() {
+
     }
 
     @Override
-    protected void onStop() {
-        taskRunner.stop();
-    }
+    public void stop() {
 
-    @Override
-    protected String generateName() {
-        return "tasksubmitter.default";
     }
 }

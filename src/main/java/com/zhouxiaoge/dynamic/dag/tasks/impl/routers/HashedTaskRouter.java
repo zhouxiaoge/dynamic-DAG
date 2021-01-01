@@ -4,13 +4,12 @@ import com.zhouxiaoge.dynamic.dag.models.Job;
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskNotifier;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskRouter;
-import io.gridgo.framework.impl.NonameComponentLifecycle;
 import org.joo.promise4j.Promise;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class HashedTaskRouter extends NonameComponentLifecycle implements TaskRouter {
+public class HashedTaskRouter implements TaskRouter {
 
     private static final long serialVersionUID = 3542951723310626472L;
 
@@ -31,12 +30,6 @@ public class HashedTaskRouter extends NonameComponentLifecycle implements TaskRo
         return Promise.of(null);
     }
 
-    @Override
-    protected void onStop() {
-        for (var router : routers) {
-            router.shutdownNow();
-        }
-    }
 
     @Override
     public Promise<Object, Throwable> routeBatch(TaskNotifier notifier, String batchId) {
@@ -51,7 +44,12 @@ public class HashedTaskRouter extends NonameComponentLifecycle implements TaskRo
     }
 
     @Override
-    protected void onStart() {
-        // Nothing to do here
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
     }
 }

@@ -9,7 +9,6 @@ import com.zhouxiaoge.dynamic.dag.tasks.TaskNotifier;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskQueue;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskRouter;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskStorage;
-import io.gridgo.framework.impl.NonameComponentLifecycle;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.joo.promise4j.Promise;
@@ -20,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class AbstractTaskQueue extends NonameComponentLifecycle implements TaskQueue, TaskNotifier {
+public abstract class AbstractTaskQueue implements TaskQueue, TaskNotifier {
 
     private TaskStorage storage;
 
@@ -101,13 +100,7 @@ public abstract class AbstractTaskQueue extends NonameComponentLifecycle impleme
         runJobs(batchExecution, batchId, jobs);
     }
 
-    @Override
-    protected void onStart() {
-        router.start();
-    }
-
-    @Override
-    protected void onStop() {
+    public void onStop() {
         router.stop();
     }
 
