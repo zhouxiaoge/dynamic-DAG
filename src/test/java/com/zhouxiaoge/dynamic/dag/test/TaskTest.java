@@ -1,5 +1,6 @@
-package com.zhouxiaoge.dynamic.dag.jobs;
+package com.zhouxiaoge.dynamic.dag.test;
 
+import com.zhouxiaoge.dynamic.dag.jobs.ExecService;
 import org.joo.promise4j.PromiseException;
 import org.junit.Test;
 

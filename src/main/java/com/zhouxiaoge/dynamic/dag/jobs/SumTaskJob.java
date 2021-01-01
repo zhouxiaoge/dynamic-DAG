@@ -30,6 +30,9 @@ public class SumTaskJob implements Job {
         Map<String, Object> contextData = context.getContextData();
         Object key = contextData.get("key");
         Integer i = Integer.valueOf(key.toString());
+        if (i > 3) {
+            return Promise.ofCause(new RuntimeException("just failed"));
+        }
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("key", i + 1);
         System.out.println("SumTaskJob-->" + resultMap);

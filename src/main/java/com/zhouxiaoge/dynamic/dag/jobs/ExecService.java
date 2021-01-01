@@ -16,7 +16,8 @@ import java.util.Collections;
 public class ExecService {
 
     public boolean execTask(String variable) throws InterruptedException, PromiseException {
-        DefaultTaskMapper taskMapper = new DefaultTaskMapper().with("print-task-job", PrintTaskJob::new).with("sum-task-job", SumTaskJob::new);
+        DefaultTaskMapper taskMapper = new DefaultTaskMapper().with("print-task-job", PrintTaskJob::new)
+                .with("sum-task-job", SumTaskJob::new);
         MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
         HashedTaskRouter taskRouter = new HashedTaskRouter(2);
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);

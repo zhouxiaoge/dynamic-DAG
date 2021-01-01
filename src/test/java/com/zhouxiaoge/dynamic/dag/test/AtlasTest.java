@@ -71,7 +71,7 @@ public class AtlasTest extends AtlasBaseTest {
 
     @Test
     public void testGraph() throws InterruptedException, PromiseException {
-        var taskMapper = new DefaultTaskMapper().with("test-task", PrintTaskJob::new);
+        DefaultTaskMapper taskMapper = new DefaultTaskMapper().with("test-task", PrintTaskJob::new);
         var taskStorage = new MemBasedTaskStorage();
         var taskRouter = new HashedTaskRouter(2);
         var taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
