@@ -9,7 +9,7 @@ import com.zhouxiaoge.dynamic.dag.tasks.impl.queue.PooledTaskRunner;
 import com.zhouxiaoge.dynamic.dag.tasks.impl.routers.KafkaConsumerRouter;
 import com.zhouxiaoge.dynamic.dag.tasks.impl.routers.KafkaProducerRouter;
 import com.zhouxiaoge.dynamic.dag.tasks.impl.storages.MemBasedTaskStorage;
-import com.zhouxiaoge.dynamic.dag.test.jobs.PrintTaskJob;
+import com.zhouxiaoge.dynamic.dag.jobs.PrintTaskJob;
 import org.joo.promise4j.Promise;
 import org.joo.promise4j.PromiseException;
 import org.junit.Before;

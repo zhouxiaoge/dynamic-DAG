@@ -11,7 +11,7 @@ import com.zhouxiaoge.dynamic.dag.tasks.impl.storages.MemBasedTaskStorage;
 import com.zhouxiaoge.dynamic.dag.models.impl.results.BatchTaskResult;
 import com.zhouxiaoge.dynamic.dag.support.exceptions.CyclicGraphDetectedException;
 import com.zhouxiaoge.dynamic.dag.test.jobs.FailTaskJob;
-import com.zhouxiaoge.dynamic.dag.test.jobs.PrintTaskJob;
+import com.zhouxiaoge.dynamic.dag.jobs.PrintTaskJob;
 import org.joo.promise4j.Promise;
 import org.joo.promise4j.PromiseException;
 import org.junit.Assert;
