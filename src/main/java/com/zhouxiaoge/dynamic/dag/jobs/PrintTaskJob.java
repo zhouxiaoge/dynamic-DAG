@@ -29,12 +29,6 @@ public class PrintTaskJob implements Job {
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
         Map<String, Object> contextData = context.getContextData();
         System.out.println("PrintTaskJob-->" + contextData);
-        Map<String, TaskResult> result = new HashMap<>();
-        DefaultTaskResult taskResult = new DefaultTaskResult();
-        Map<String, Object> map = new HashMap<>();
-        map.put(taskTopo.getTaskId(), context.getBatchId() + "-" + Math.random());
-        taskResult.setData(contextData);
-        result.put("SumTask", taskResult);
-        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), result));
+        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), null, contextData));
     }
 }

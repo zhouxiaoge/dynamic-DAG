@@ -28,13 +28,11 @@ public class SumTaskJob implements Job {
     @Override
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
         Map<String, Object> contextData = context.getContextData();
-        System.out.println("SumTaskJob-->" + contextData);
-        Map<String, TaskResult> result = new HashMap<>();
-        DefaultTaskResult taskResult = new DefaultTaskResult();
-        Map<String, Object> map = new HashMap<>();
-        map.put(taskTopo.getTaskId(), context.getBatchId() + "-" + Math.random());
-        taskResult.setData(contextData);
-        result.put("SumTask", taskResult);
-        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), result));
+        Object key = contextData.get("key");
+        Integer i = Integer.valueOf(key.toString());
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("key", i + 1);
+        System.out.println("SumTaskJob-->" + resultMap);
+        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), null, resultMap));
     }
 }

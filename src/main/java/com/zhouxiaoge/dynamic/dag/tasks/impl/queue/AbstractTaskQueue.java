@@ -76,13 +76,9 @@ public abstract class AbstractTaskQueue extends NonameComponentLifecycle impleme
 
             for (String dependedTask : dependedTasks) {
                 Map<String, TaskResult> completedJobs = batchExecution.getCompletedJobs();
-                TaskResult taskResult = completedJobs.get(dependedTask);
-                Map<String, TaskResult> result = taskResult.getResult();
-                for (String s : result.keySet()) {
-                    DefaultTaskResult defaultTaskResult = (DefaultTaskResult) result.get(s);
-                    Map<String, Object> data = defaultTaskResult.getData();
-                    map.putAll(data);
-                }
+                DefaultTaskResult taskResult = (DefaultTaskResult) completedJobs.get(dependedTask);
+                Map<String, Object> data = taskResult.getData();
+                map.putAll(data);
             }
             Map<String, Object> taskData = job.getTaskTopo().getTask().getTaskData();
             map.putAll(taskData);
