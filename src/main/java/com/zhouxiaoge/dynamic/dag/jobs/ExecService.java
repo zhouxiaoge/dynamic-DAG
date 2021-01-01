@@ -1,7 +1,5 @@
 package com.zhouxiaoge.dynamic.dag.jobs;
 
-import com.zhouxiaoge.dynamic.dag.jobs.PrintTaskJob;
-import com.zhouxiaoge.dynamic.dag.jobs.SumTaskJob;
 import com.zhouxiaoge.dynamic.dag.models.Batch;
 import com.zhouxiaoge.dynamic.dag.models.Task;
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;

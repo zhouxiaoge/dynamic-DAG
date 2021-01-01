@@ -1,12 +1,12 @@
 package com.zhouxiaoge.dynamic.dag.tasks.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
 import com.zhouxiaoge.dynamic.dag.models.Job;
 import com.zhouxiaoge.dynamic.dag.models.TaskTopo;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskMapper;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 public class DefaultTaskMapper implements TaskMapper {
 

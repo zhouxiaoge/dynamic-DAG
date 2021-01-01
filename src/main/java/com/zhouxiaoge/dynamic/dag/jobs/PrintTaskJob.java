@@ -7,7 +7,6 @@ import com.zhouxiaoge.dynamic.dag.models.TaskTopo;
 import com.zhouxiaoge.dynamic.dag.models.impl.results.DefaultTaskResult;
 import org.joo.promise4j.Promise;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class PrintTaskJob implements Job {

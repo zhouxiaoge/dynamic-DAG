@@ -2,7 +2,6 @@ package com.zhouxiaoge.dynamic.dag.models.impl;
 
 import com.zhouxiaoge.dynamic.dag.models.Task;
 import com.zhouxiaoge.dynamic.dag.models.TaskTopo;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

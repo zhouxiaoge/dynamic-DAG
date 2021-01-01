@@ -3,9 +3,9 @@ package com.zhouxiaoge.dynamic.dag.tasks.impl;
 import com.zhouxiaoge.dynamic.dag.models.Batch;
 import com.zhouxiaoge.dynamic.dag.models.Task;
 import com.zhouxiaoge.dynamic.dag.models.TaskTopo;
-import com.zhouxiaoge.dynamic.dag.tasks.impl.algorithm.DFSTopoSorting;
 import com.zhouxiaoge.dynamic.dag.models.impl.DefaultBatch;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskSorter;
+import com.zhouxiaoge.dynamic.dag.tasks.impl.algorithm.DFSTopoSorting;
 import org.joo.promise4j.Promise;
 
 public class DAGTaskSorter implements TaskSorter {

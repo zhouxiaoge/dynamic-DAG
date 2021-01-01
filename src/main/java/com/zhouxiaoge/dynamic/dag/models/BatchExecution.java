@@ -1,8 +1,8 @@
 package com.zhouxiaoge.dynamic.dag.models;
 
-import java.util.Map;
-
 import org.joo.promise4j.Deferred;
+
+import java.util.Map;
 
 public interface BatchExecution {
 

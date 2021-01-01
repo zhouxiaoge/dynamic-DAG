@@ -1,10 +1,10 @@
 package com.zhouxiaoge.dynamic.dag.tasks;
 
-import java.io.Serializable;
-
 import com.zhouxiaoge.dynamic.dag.models.Job;
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
 import org.joo.promise4j.Promise;
+
+import java.io.Serializable;
 
 public interface TaskRouter extends Serializable, Component {
 

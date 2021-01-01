@@ -1,10 +1,10 @@
 package com.zhouxiaoge.dynamic.dag.models;
 
+import com.zhouxiaoge.dynamic.dag.models.impl.DefaultTask;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
-
-import com.zhouxiaoge.dynamic.dag.models.impl.DefaultTask;
 
 public interface Task extends Serializable {
 

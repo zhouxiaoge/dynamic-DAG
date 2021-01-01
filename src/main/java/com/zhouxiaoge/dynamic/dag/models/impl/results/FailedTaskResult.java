@@ -2,8 +2,6 @@ package com.zhouxiaoge.dynamic.dag.models.impl.results;
 
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
 import com.zhouxiaoge.dynamic.dag.models.TaskResultStatus;
-
-import io.gridgo.bean.BElement;
 import lombok.Getter;
 import lombok.NonNull;
 

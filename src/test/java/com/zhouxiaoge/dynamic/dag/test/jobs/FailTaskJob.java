@@ -4,9 +4,8 @@ import com.zhouxiaoge.dynamic.dag.models.ExecutionContext;
 import com.zhouxiaoge.dynamic.dag.models.Job;
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
 import com.zhouxiaoge.dynamic.dag.models.TaskTopo;
-import org.joo.promise4j.Promise;
-
 import lombok.Getter;
+import org.joo.promise4j.Promise;
 
 @Getter
 public class FailTaskJob implements Job {

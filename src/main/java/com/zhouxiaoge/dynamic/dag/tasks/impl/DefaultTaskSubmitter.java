@@ -1,21 +1,16 @@
 package com.zhouxiaoge.dynamic.dag.tasks.impl;
 
-import java.util.Arrays;
-
+import com.zhouxiaoge.dynamic.dag.models.*;
+import com.zhouxiaoge.dynamic.dag.models.impl.DefaultBatch;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskMapper;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskQueue;
-import com.zhouxiaoge.dynamic.dag.models.Batch;
-import com.zhouxiaoge.dynamic.dag.models.Job;
-import com.zhouxiaoge.dynamic.dag.models.Task;
-import com.zhouxiaoge.dynamic.dag.models.TaskResult;
-import com.zhouxiaoge.dynamic.dag.models.TaskTopo;
-import com.zhouxiaoge.dynamic.dag.models.impl.DefaultBatch;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskSorter;
 import com.zhouxiaoge.dynamic.dag.tasks.TaskSubmitter;
-import org.joo.promise4j.Promise;
-
 import io.gridgo.framework.impl.AbstractComponentLifecycle;
 import lombok.AllArgsConstructor;
+import org.joo.promise4j.Promise;
+
+import java.util.Arrays;
 
 @AllArgsConstructor
 public class DefaultTaskSubmitter extends AbstractComponentLifecycle implements TaskSubmitter {

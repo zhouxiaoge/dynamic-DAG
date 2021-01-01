@@ -1,21 +1,21 @@
 package com.zhouxiaoge.dynamic.dag.test;
 
-import java.util.ArrayList;
-
+import com.zhouxiaoge.dynamic.dag.jobs.PrintTaskJob;
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
+import com.zhouxiaoge.dynamic.dag.models.impl.results.BatchTaskResult;
+import com.zhouxiaoge.dynamic.dag.support.exceptions.CyclicGraphDetectedException;
 import com.zhouxiaoge.dynamic.dag.tasks.impl.DefaultTaskMapper;
 import com.zhouxiaoge.dynamic.dag.tasks.impl.DefaultTaskSubmitter;
 import com.zhouxiaoge.dynamic.dag.tasks.impl.queue.PooledTaskRunner;
 import com.zhouxiaoge.dynamic.dag.tasks.impl.routers.HashedTaskRouter;
 import com.zhouxiaoge.dynamic.dag.tasks.impl.storages.MemBasedTaskStorage;
-import com.zhouxiaoge.dynamic.dag.models.impl.results.BatchTaskResult;
-import com.zhouxiaoge.dynamic.dag.support.exceptions.CyclicGraphDetectedException;
 import com.zhouxiaoge.dynamic.dag.test.jobs.FailTaskJob;
-import com.zhouxiaoge.dynamic.dag.jobs.PrintTaskJob;
 import org.joo.promise4j.Promise;
 import org.joo.promise4j.PromiseException;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 public class AtlasTest extends AtlasBaseTest {
 

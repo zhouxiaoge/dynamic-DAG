@@ -1,9 +1,9 @@
 package com.zhouxiaoge.dynamic.dag.test;
 
-import java.util.Collections;
-
 import com.zhouxiaoge.dynamic.dag.models.Batch;
 import com.zhouxiaoge.dynamic.dag.models.Task;
+
+import java.util.Collections;
 
 public class AtlasBaseTest {
 

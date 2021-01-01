@@ -1,23 +1,15 @@
 package com.zhouxiaoge.dynamic.dag.tasks.impl.algorithm;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.zhouxiaoge.dynamic.dag.models.Task;
 import com.zhouxiaoge.dynamic.dag.models.TaskTopo;
 import com.zhouxiaoge.dynamic.dag.models.impl.DefaultTaskTopo;
 import com.zhouxiaoge.dynamic.dag.support.exceptions.CyclicGraphDetectedException;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 public class DFSTopoSorting {
 
