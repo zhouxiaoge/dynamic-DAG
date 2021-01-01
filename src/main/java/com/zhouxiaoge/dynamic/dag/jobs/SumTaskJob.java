@@ -29,6 +29,6 @@ public class SumTaskJob implements Job {
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
         Map<String, Object> contextData = context.getContextData();
         System.out.println("SumTaskJob-->" + contextData);
-        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), BObject.of("test", "xyz")));
+        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), BObject.of("SumTask", context.getBatchId())));
     }
 }

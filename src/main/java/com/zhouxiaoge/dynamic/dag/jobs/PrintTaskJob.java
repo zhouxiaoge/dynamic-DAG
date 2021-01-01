@@ -5,12 +5,11 @@ import com.zhouxiaoge.dynamic.dag.models.Job;
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
 import com.zhouxiaoge.dynamic.dag.models.TaskTopo;
 import com.zhouxiaoge.dynamic.dag.models.impl.results.DefaultTaskResult;
+import io.gridgo.bean.BObject;
 import org.joo.promise4j.Promise;
 
-import io.gridgo.bean.BObject;
-import lombok.Getter;
+import java.util.Map;
 
-@Getter
 public class PrintTaskJob implements Job {
 
     private static final long serialVersionUID = 6875856662528294631L;
@@ -22,14 +21,14 @@ public class PrintTaskJob implements Job {
     }
 
     @Override
+    public TaskTopo getTaskTopo() {
+        return taskTopo;
+    }
+
+    @Override
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
-        System.out.println("Running task [" + context.getBatchId() + " - " + taskTopo.getTaskId() + "]");
-        try {
-            Thread.sleep((long) (Math.random() * (long) context.getContextData().get("sleepTimeMs")));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        System.out.println("Finish task [" + context.getBatchId() + " - " + taskTopo.getTaskId() + "]");
-        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), BObject.of("test", "xyz")));
+        Map<String, Object> contextData = context.getContextData();
+        System.out.println("PrintTaskJob-->" + contextData);
+        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), BObject.of("PrintTask", context.getBatchId())));
     }
 }
