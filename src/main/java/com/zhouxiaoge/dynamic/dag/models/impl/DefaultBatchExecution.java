@@ -1,19 +1,17 @@
 package com.zhouxiaoge.dynamic.dag.models.impl;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.zhouxiaoge.dynamic.dag.models.Batch;
 import com.zhouxiaoge.dynamic.dag.models.BatchExecution;
 import com.zhouxiaoge.dynamic.dag.models.Job;
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
 import com.zhouxiaoge.dynamic.dag.models.impl.results.BatchTaskResult;
 import com.zhouxiaoge.dynamic.dag.models.impl.results.CanceledTaskResult;
+import lombok.Getter;
 import org.joo.promise4j.Deferred;
 
-import io.gridgo.bean.BArray;
-import lombok.Getter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 public class DefaultBatchExecution implements BatchExecution {
@@ -44,7 +42,7 @@ public class DefaultBatchExecution implements BatchExecution {
         if (depended.length == 0)
             return true;
         return Arrays.stream(depended) //
-                     .allMatch(this::hasCompleted);
+                .allMatch(this::hasCompleted);
     }
 
     private boolean hasCompleted(String task) {
@@ -54,7 +52,6 @@ public class DefaultBatchExecution implements BatchExecution {
     @Override
     public void completeJob(Job job, TaskResult result) {
         completedJobs.put(job.getTaskTopo().getTaskId(), result);
-        // canceled children of failed task
         if (!result.isSuccessful()) {
             for (var child : job.getTaskTopo().getDependantTasks()) {
                 completeJob(taskMap.get(child), new CanceledTaskResult(child));
@@ -65,7 +62,6 @@ public class DefaultBatchExecution implements BatchExecution {
 
     protected void checkComplete() {
         if (isCompleted()) {
-            var completedJobs = BArray.ofSequence(this.completedJobs.values().toArray());
             deferred.resolve(new BatchTaskResult(batch.getId(), completedJobs));
         }
     }

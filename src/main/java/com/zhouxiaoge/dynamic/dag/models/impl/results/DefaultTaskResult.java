@@ -2,10 +2,10 @@ package com.zhouxiaoge.dynamic.dag.models.impl.results;
 
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
 import com.zhouxiaoge.dynamic.dag.models.TaskResultStatus;
-
-import io.gridgo.bean.BElement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.Map;
 
 @Getter
 @AllArgsConstructor
@@ -13,7 +13,7 @@ public class DefaultTaskResult implements TaskResult {
 
     private String id;
 
-    private BElement result;
+    private Map<String, TaskResult> result;
 
     public DefaultTaskResult() {
 

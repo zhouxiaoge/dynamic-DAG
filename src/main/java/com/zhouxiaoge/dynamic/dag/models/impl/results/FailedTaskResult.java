@@ -7,6 +7,8 @@ import io.gridgo.bean.BElement;
 import lombok.Getter;
 import lombok.NonNull;
 
+import java.util.Map;
+
 @Getter
 public class FailedTaskResult implements TaskResult {
 
@@ -30,7 +32,7 @@ public class FailedTaskResult implements TaskResult {
     }
 
     @Override
-    public BElement getResult() {
+    public Map<String, TaskResult> getResult() {
         return null;
     }
 

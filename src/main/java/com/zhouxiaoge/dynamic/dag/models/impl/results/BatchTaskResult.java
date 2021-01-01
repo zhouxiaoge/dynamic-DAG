@@ -1,14 +1,10 @@
 package com.zhouxiaoge.dynamic.dag.models.impl.results;
 
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
 import com.zhouxiaoge.dynamic.dag.models.TaskResultStatus;
-import com.zhouxiaoge.dynamic.dag.support.exceptions.BatchException;
-
-import io.gridgo.bean.BArray;
 import lombok.Getter;
+
+import java.util.Map;
 
 @Getter
 public class BatchTaskResult implements TaskResult {
@@ -19,24 +15,28 @@ public class BatchTaskResult implements TaskResult {
 
     private Throwable cause;
 
-    private BArray result;
+    private Map<String, TaskResult> result;
 
     private TaskResultStatus status;
 
-    public BatchTaskResult(String id, BArray results) {
+    public BatchTaskResult(String id, Map<String, TaskResult> results) {
         this.id = id;
         this.result = results;
         checkForFailure();
     }
 
     private void checkForFailure() {
-        var failures = result.stream() //
-                             .map(e -> e.asReference().<TaskResult>getReference())
-                             .filter(e -> !e.isSuccessful()) //
-                             .collect(Collectors.toMap(e -> e.getId(), e -> Optional.ofNullable(e.getCause())));
-        successful = failures.isEmpty();
+        boolean flag = true;
+        for (String s : result.keySet()) {
+            TaskResult taskResult = result.get(s);
+            boolean successful = taskResult.isSuccessful();
+            if (!successful) {
+                flag = false;
+                break;
+            }
+        }
+        successful = flag;
         if (!successful) {
-            cause = new BatchException(failures);
             status = TaskResultStatus.FAILED;
         } else {
             status = TaskResultStatus.FINISHED;

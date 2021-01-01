@@ -5,9 +5,9 @@ import com.zhouxiaoge.dynamic.dag.models.Job;
 import com.zhouxiaoge.dynamic.dag.models.TaskResult;
 import com.zhouxiaoge.dynamic.dag.models.TaskTopo;
 import com.zhouxiaoge.dynamic.dag.models.impl.results.DefaultTaskResult;
-import io.gridgo.bean.BObject;
 import org.joo.promise4j.Promise;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class PrintTaskJob implements Job {
@@ -29,6 +29,8 @@ public class PrintTaskJob implements Job {
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
         Map<String, Object> contextData = context.getContextData();
         System.out.println("PrintTaskJob-->" + contextData);
-        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), BObject.of("PrintTask", context.getBatchId())));
+        Map<String, TaskResult> result = new HashMap<>();
+//        result.put("PrintTask", context.getBatchId() + "-" + Math.random());
+        return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), result));
     }
 }

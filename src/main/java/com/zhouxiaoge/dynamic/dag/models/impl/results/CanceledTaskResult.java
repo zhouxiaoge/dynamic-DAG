@@ -6,6 +6,8 @@ import com.zhouxiaoge.dynamic.dag.models.TaskResultStatus;
 import io.gridgo.bean.BElement;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 public class CanceledTaskResult implements TaskResult {
 
@@ -31,7 +33,7 @@ public class CanceledTaskResult implements TaskResult {
     }
 
     @Override
-    public BElement getResult() {
+    public Map<String, TaskResult> getResult() {
         return null;
     }
 
