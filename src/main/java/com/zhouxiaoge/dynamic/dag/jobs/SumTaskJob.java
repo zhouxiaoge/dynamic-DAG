@@ -30,7 +30,11 @@ public class SumTaskJob implements Job {
         Map<String, Object> contextData = context.getContextData();
         System.out.println("SumTaskJob-->" + contextData);
         Map<String, TaskResult> result = new HashMap<>();
-//        result.put("SumTask", context.getBatchId());
+        DefaultTaskResult taskResult = new DefaultTaskResult();
+        Map<String, Object> map = new HashMap<>();
+        map.put(taskTopo.getTaskId(), context.getBatchId() + "-" + Math.random());
+        taskResult.setData(contextData);
+        result.put("SumTask", taskResult);
         return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), result));
     }
 }

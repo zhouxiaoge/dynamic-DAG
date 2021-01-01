@@ -27,10 +27,10 @@ public class ExecService {
         System.out.println("----------------------------" + variable + "----------------------------");
         Batch<Task> taskBatch = Batch.of("batchId-" + variable,
                 Task.of("1", "task1", "print-task-job", new String[]{"2"}, Collections.singletonMap("key", variable)),
-                Task.of("2", "task2", "sum-task-job", new String[]{"3"}, Collections.singletonMap("key", variable)),
-                Task.of("3", "task3", "print-task-job", new String[]{"4"}, Collections.singletonMap("key", variable)),
-                Task.of("4", "task4", "sum-task-job", new String[]{"5"}, Collections.singletonMap("key", variable)),
-                Task.of("5", "task5", "print-task-job", new String[0], Collections.singletonMap("key", variable)));
+                Task.of("2", "task2", "sum-task-job", new String[]{"3"}),
+                Task.of("3", "task3", "print-task-job", new String[]{"4"}),
+                Task.of("4", "task4", "sum-task-job", new String[]{"5"}),
+                Task.of("5", "task5", "print-task-job", new String[0]));
         Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
         TaskResult taskResult = taskResultThrowablePromise.get();
         submitter.stop();

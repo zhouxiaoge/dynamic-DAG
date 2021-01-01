@@ -16,6 +16,7 @@ import org.joo.promise4j.Promise;
 import org.joo.promise4j.impl.CompletableDeferredObject;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 @Getter(AccessLevel.PROTECTED)
@@ -71,12 +72,21 @@ public abstract class AbstractTaskQueue extends NonameComponentLifecycle impleme
             }
             String[] dependedTasks = job.getTaskTopo().getDependedTasks();
 
+            Map<String, Object> map = new HashMap<>();
+
             for (String dependedTask : dependedTasks) {
                 Map<String, TaskResult> completedJobs = batchExecution.getCompletedJobs();
                 TaskResult taskResult = completedJobs.get(dependedTask);
-                System.out.println("上次执行结果--" + taskResult.getResult());
+                Map<String, TaskResult> result = taskResult.getResult();
+                for (String s : result.keySet()) {
+                    DefaultTaskResult defaultTaskResult = (DefaultTaskResult) result.get(s);
+                    Map<String, Object> data = defaultTaskResult.getData();
+                    map.putAll(data);
+                }
             }
-            DefaultExecutionContext defaultExecutionContext = new DefaultExecutionContext(batchId, job.getTaskTopo().getTask().getTaskData());
+            Map<String, Object> taskData = job.getTaskTopo().getTask().getTaskData();
+            map.putAll(taskData);
+            DefaultExecutionContext defaultExecutionContext = new DefaultExecutionContext(batchId, map);
             runJob(job, defaultExecutionContext);
         }
     }
