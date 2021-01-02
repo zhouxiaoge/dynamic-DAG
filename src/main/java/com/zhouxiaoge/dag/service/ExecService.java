@@ -1,5 +1,7 @@
-package com.zhouxiaoge.dag.jobs;
+package com.zhouxiaoge.dag.service;
 
+import com.zhouxiaoge.dag.jobs.PrintTaskJob;
+import com.zhouxiaoge.dag.jobs.SumTaskJob;
 import com.zhouxiaoge.dag.models.Batch;
 import com.zhouxiaoge.dag.models.Task;
 import com.zhouxiaoge.dag.models.TaskResult;
@@ -32,9 +34,7 @@ public class ExecService {
                 Task.of("4", "task4", "sum-task-job", new String[]{"5"}),
                 Task.of("5", "task5", "print-task-job", new String[0]));
         Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
-        System.out.println("----------------------------" + variable + "----------------------------");
         TaskResult taskResult = taskResultThrowablePromise.get();
-        System.out.println("----------------------------" + variable + "----------------------------");
         submitter.stop();
         return taskResult.isSuccessful();
     }

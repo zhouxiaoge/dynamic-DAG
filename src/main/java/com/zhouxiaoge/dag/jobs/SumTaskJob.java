@@ -37,7 +37,7 @@ public class SumTaskJob implements Job {
 //        }
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("key", i + 1);
-            System.out.println("SumTaskJob-->" + resultMap);
+            System.out.println("SumTaskJob-->" + context.getBatchId() + ":" + resultMap);
             return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), null, resultMap));
         } catch (Exception e) {
             return Promise.ofCause(new RuntimeException("just failed"));
