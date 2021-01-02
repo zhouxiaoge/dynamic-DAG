@@ -1,35 +1,40 @@
 package com.zhouxiaoge.dynamic.dag.test;
 
-import com.zhouxiaoge.dynamic.dag.jobs.PrintTaskJob;
-import com.zhouxiaoge.dynamic.dag.models.TaskResult;
-import com.zhouxiaoge.dynamic.dag.models.impl.results.BatchTaskResult;
-import com.zhouxiaoge.dynamic.dag.support.exceptions.CyclicGraphDetectedException;
-import com.zhouxiaoge.dynamic.dag.tasks.impl.DefaultTaskMapper;
-import com.zhouxiaoge.dynamic.dag.tasks.impl.DefaultTaskSubmitter;
-import com.zhouxiaoge.dynamic.dag.tasks.impl.queue.PooledTaskRunner;
-import com.zhouxiaoge.dynamic.dag.tasks.impl.routers.HashedTaskRouter;
-import com.zhouxiaoge.dynamic.dag.tasks.impl.storages.MemBasedTaskStorage;
-import com.zhouxiaoge.dynamic.dag.test.jobs.FailTaskJob;
+import com.zhouxiaoge.dag.exceptions.CyclicGraphDetectedException;
+import com.zhouxiaoge.dag.jobs.FailTaskJob;
+import com.zhouxiaoge.dag.jobs.PrintTaskJob;
+import com.zhouxiaoge.dag.models.Batch;
+import com.zhouxiaoge.dag.models.Task;
+import com.zhouxiaoge.dag.models.TaskResult;
+import com.zhouxiaoge.dag.models.impl.results.BatchTaskResult;
+import com.zhouxiaoge.dag.tasks.impl.DefaultTaskMapper;
+import com.zhouxiaoge.dag.tasks.impl.DefaultTaskSubmitter;
+import com.zhouxiaoge.dag.tasks.impl.queue.PooledTaskRunner;
+import com.zhouxiaoge.dag.tasks.impl.routers.HashedTaskRouter;
+import com.zhouxiaoge.dag.tasks.impl.storages.MemBasedTaskStorage;
 import org.joo.promise4j.Promise;
 import org.joo.promise4j.PromiseException;
+import org.joo.promise4j.impl.JoinedResults;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
+
 
 public class AtlasTest extends AtlasBaseTest {
 
     @Test
     public void testCircularDependency() throws PromiseException, InterruptedException {
-        var taskMapper = new DefaultTaskMapper().with("test-task", PrintTaskJob::new);
-        var taskStorage = new MemBasedTaskStorage();
-        var taskRouter = new HashedTaskRouter(2);
-        var taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
-        var submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
+        DefaultTaskMapper taskMapper = new DefaultTaskMapper().with("test-task", PrintTaskJob::new);
+        MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
+        HashedTaskRouter taskRouter = new HashedTaskRouter(2);
+        PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
+        DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
 
         submitter.start();
 
-        var batch = createBatchWithCircularDependency();
+        Batch<Task> batch = createBatchWithCircularDependency();
 
         try {
             submitter.submitTasks(batch).get();
@@ -45,24 +50,24 @@ public class AtlasTest extends AtlasBaseTest {
 
     @Test
     public void testRandomFailure() throws InterruptedException, PromiseException {
-        var taskMapper = new DefaultTaskMapper().with("test-task", FailTaskJob::new);
-        var taskStorage = new MemBasedTaskStorage();
-        var taskRouter = new HashedTaskRouter(2);
-        var taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
-        var submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
+        DefaultTaskMapper taskMapper = new DefaultTaskMapper().with("test-task", FailTaskJob::new);
+        MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
+        HashedTaskRouter taskRouter = new HashedTaskRouter(2);
+        PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
+        DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
 
         submitter.start();
 
-        var promises = new ArrayList<Promise<TaskResult, Throwable>>();
-        for (var i = 0; i < 10; i++) {
-            var batch = createBatch("test" + i);
-            var promise = submitter.submitTasks(batch);
+        List<Promise<TaskResult, Throwable>> promises = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Batch<Task> batch = createBatch("test" + i);
+            Promise<TaskResult, Throwable> promise = submitter.submitTasks(batch);
             promises.add(promise);
         }
 
-        var results = Promise.all(promises).get();
-        for (var result : results) {
-            var batchResult = (BatchTaskResult) result;
+        JoinedResults<TaskResult> results = Promise.all(promises).get();
+        for (TaskResult result : results) {
+            BatchTaskResult batchResult = (BatchTaskResult) result;
             System.out.println(batchResult.getResult());
         }
 
@@ -72,17 +77,17 @@ public class AtlasTest extends AtlasBaseTest {
     @Test
     public void testGraph() throws InterruptedException, PromiseException {
         DefaultTaskMapper taskMapper = new DefaultTaskMapper().with("test-task", PrintTaskJob::new);
-        var taskStorage = new MemBasedTaskStorage();
-        var taskRouter = new HashedTaskRouter(2);
-        var taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
-        var submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
+        MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
+        HashedTaskRouter taskRouter = new HashedTaskRouter(2);
+        PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
+        DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
 
         submitter.start();
 
-        var promises = new ArrayList<Promise<TaskResult, Throwable>>();
-        for (var i = 0; i < 5; i++) {
-            var batch = createBatch("test" + i);
-            var promise = submitter.submitTasks(batch);
+        List<Promise<TaskResult, Throwable>> promises = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Batch<Task> batch = createBatch("test" + i);
+            Promise<TaskResult, Throwable> promise = submitter.submitTasks(batch);
             promises.add(promise);
         }
 
