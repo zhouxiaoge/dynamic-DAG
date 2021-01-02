@@ -23,7 +23,6 @@ public class ExecService {
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
         submitter.start();
-        System.out.println("----------------------------" + variable + "----------------------------");
         Batch<Task> taskBatch = Batch.of("batchId-" + variable,
                 Task.of("1", "task1", "print-task-job", new String[]{"2"}, Collections.singletonMap("key", variable)),
                 Task.of("2", "task2", "sum-task-job", new String[]{"3"}),
@@ -31,7 +30,9 @@ public class ExecService {
                 Task.of("4", "task4", "sum-task-job", new String[]{"5"}),
                 Task.of("5", "task5", "print-task-job", new String[0]));
         Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
+        System.out.println("----------------------------" + variable + "----------------------------");
         TaskResult taskResult = taskResultThrowablePromise.get();
+        System.out.println("----------------------------" + variable + "----------------------------");
         submitter.stop();
         return taskResult.isSuccessful();
     }
