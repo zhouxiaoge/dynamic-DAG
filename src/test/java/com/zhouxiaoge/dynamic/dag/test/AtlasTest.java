@@ -15,8 +15,8 @@ import com.zhouxiaoge.dag.tasks.impl.storages.MemBasedTaskStorage;
 import org.joo.promise4j.Promise;
 import org.joo.promise4j.PromiseException;
 import org.joo.promise4j.impl.JoinedResults;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.List;
 public class AtlasTest extends AtlasBaseTest {
 
     @Test
-    public void testCircularDependency() throws PromiseException, InterruptedException {
+    public void testCircularDependency() throws InterruptedException {
         DefaultTaskMapper taskMapper = new DefaultTaskMapper().with("test-task", PrintTaskJob::new);
         MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
         HashedTaskRouter taskRouter = new HashedTaskRouter(2);
@@ -38,10 +38,10 @@ public class AtlasTest extends AtlasBaseTest {
 
         try {
             submitter.submitTasks(batch).get();
-            Assert.fail("must fail with cyclic graph detected exception");
+            Assertions.fail("must fail with cyclic graph detected exception");
         } catch (PromiseException ex) {
             if (!(ex.getCause() instanceof CyclicGraphDetectedException)) {
-                Assert.fail(ex.getCause().getMessage());
+                Assertions.fail(ex.getCause().getMessage());
             }
         }
 

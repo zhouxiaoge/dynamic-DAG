@@ -2,7 +2,7 @@ package com.zhouxiaoge.dynamic.dag.test;
 
 import com.zhouxiaoge.dag.service.ExecService;
 import org.joo.promise4j.PromiseException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TaskTest {
 
