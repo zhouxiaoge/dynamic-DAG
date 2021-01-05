@@ -15,10 +15,10 @@ public class DefaultTask implements Task {
     private String id;
 
     private String name;
-    
+
     private String type;
-    
+
     private String[] dependants;
-    
+
     private Map<String, Object> taskData;
 }
