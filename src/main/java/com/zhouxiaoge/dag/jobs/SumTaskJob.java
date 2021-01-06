@@ -5,11 +5,12 @@ import com.zhouxiaoge.dag.models.Job;
 import com.zhouxiaoge.dag.models.TaskResult;
 import com.zhouxiaoge.dag.models.TaskTopo;
 import com.zhouxiaoge.dag.models.impl.results.DefaultTaskResult;
+import lombok.extern.slf4j.Slf4j;
 import org.joo.promise4j.Promise;
 
-import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class SumTaskJob implements Job {
 
     private static final long serialVersionUID = -3579110674551524656L;
@@ -28,18 +29,20 @@ public class SumTaskJob implements Job {
     @Override
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
         try {
-
             Map<String, Object> contextData = context.getContextData();
-            Object key = contextData.get("key");
-            int i = Integer.parseInt(key.toString());
-//        if (i > 3) {
-//            return Promise.ofCause(new RuntimeException("just failed"));
-//        }
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("key", i + 1);
-            System.out.println("SumTaskJob-->" + context.getBatchId() + ":" + resultMap);
-            return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), null, resultMap));
+            for (String s : contextData.keySet()) {
+                if ("SEX".equalsIgnoreCase(s)) {
+                    Object o = contextData.get(s);
+                    if ("0".equals(String.valueOf(o))) {
+                        contextData.put("SEX", "女");
+                    } else {
+                        contextData.put("SEX", "男");
+                    }
+                }
+            }
+            return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), null, contextData));
         } catch (Exception e) {
+            log.error("执行异常", e);
             return Promise.ofCause(new RuntimeException("just failed"));
         }
     }

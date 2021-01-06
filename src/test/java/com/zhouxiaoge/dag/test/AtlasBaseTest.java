@@ -1,4 +1,4 @@
-package com.zhouxiaoge.dynamic.dag.test;
+package com.zhouxiaoge.dag.test;
 
 
 import com.zhouxiaoge.dag.models.Batch;

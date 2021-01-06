@@ -1,7 +1,6 @@
-package com.zhouxiaoge.dynamic.dag.test;
+package com.zhouxiaoge.dag.test;
 
 import com.zhouxiaoge.dag.exceptions.CyclicGraphDetectedException;
-import com.zhouxiaoge.dag.jobs.FailTaskJob;
 import com.zhouxiaoge.dag.jobs.PrintTaskJob;
 import com.zhouxiaoge.dag.models.Batch;
 import com.zhouxiaoge.dag.models.Task;

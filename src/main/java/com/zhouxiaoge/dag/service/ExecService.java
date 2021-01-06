@@ -1,6 +1,7 @@
 package com.zhouxiaoge.dag.service;
 
 import com.zhouxiaoge.dag.jobs.PrintTaskJob;
+import com.zhouxiaoge.dag.jobs.RDBMSTaskJob;
 import com.zhouxiaoge.dag.jobs.SumTaskJob;
 import com.zhouxiaoge.dag.models.Batch;
 import com.zhouxiaoge.dag.models.Task;
@@ -47,8 +48,10 @@ public class ExecService {
     Map<String, List<Task>> map = new HashMap<>();
 
     public boolean asynExecTask(String variable, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
-        DefaultTaskMapper taskMapper = new DefaultTaskMapper().with("print-task-job", PrintTaskJob::new)
-                .with("sum-task-job", SumTaskJob::new);
+        DefaultTaskMapper taskMapper = new DefaultTaskMapper()
+                .with("print-task-job", PrintTaskJob::new)
+                .with("sum-task-job", SumTaskJob::new)
+                .with("rdbms-task-job", RDBMSTaskJob::new);
         MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
         HashedTaskRouter taskRouter = new HashedTaskRouter(2);
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
@@ -72,14 +75,10 @@ public class ExecService {
         List<Task> list = new ArrayList<>();
         Task task1 = new DefaultTask("1", "task1", "print-task-job", new String[]{"2"}, new HashMap<>());
         Task task2 = new DefaultTask("2", "task2", "sum-task-job", new String[]{"3"}, new HashMap<>());
-        Task task3 = new DefaultTask("3", "task3", "print-task-job", new String[]{"4"}, new HashMap<>());
-        Task task4 = new DefaultTask("4", "task4", "sum-task-job", new String[]{"5"}, new HashMap<>());
-        Task task5 = new DefaultTask("5", "task5", "print-task-job", new String[0], new HashMap<>());
+        Task task3 = new DefaultTask("3", "task5", "rdbms-task-job", new String[0], new HashMap<>());
         list.add(task1);
         list.add(task2);
         list.add(task3);
-        list.add(task4);
-        list.add(task5);
         map.put("zhouxiaoge", list);
     }
 }
