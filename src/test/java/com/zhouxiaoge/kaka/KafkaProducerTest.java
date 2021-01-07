@@ -1,58 +1,49 @@
 package com.zhouxiaoge.kaka;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.KafkaException;
+import org.apache.kafka.common.errors.AuthorizationException;
+import org.apache.kafka.common.errors.OutOfOrderSequenceException;
+import org.apache.kafka.common.errors.ProducerFencedException;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 
-public class KafkaProducerTest implements Runnable {
+public class KafkaProducerTest {
 
-    private final KafkaProducer<String, String> producer;
-    private final String topic;
-
-    public KafkaProducerTest(String topicName) {
+    public static void main(String[] args) throws JsonProcessingException {
         Properties props = new Properties();
         props.put("bootstrap.servers", "192.168.124.13:9092");
-        props.put("acks", "all");
-        props.put("retries", 0);
-        props.put("auto.create.topics.enable", true);
-        props.put("batch.size", 16384);
+        props.put("transactional.id", "my-transactional-id");
         props.put("key.serializer", StringSerializer.class.getName());
         props.put("value.serializer", StringSerializer.class.getName());
-        this.producer = new KafkaProducer<>(props);
-        this.topic = topicName;
-    }
+        Producer<String, String> producer = new KafkaProducer<>(props, new StringSerializer(), new StringSerializer());
+        producer.initTransactions();
 
-    @Override
-    public void run() {
-        int messageNo = 1;
         try {
-            for (; ; ) {
-                String messageStr = "你好，这是第" + messageNo + "条数据";
-                producer.send(new ProducerRecord<>(topic, "Message", messageStr));
-                //生产了100条就打印
-                if (messageNo % 100 == 0) {
-                    System.out.println("发送的信息:" + messageStr);
-                }
-                //生产1000条就退出
-                if (messageNo % 1000 == 0) {
-                    System.out.println("成功发送了" + messageNo + "条");
-                    break;
-                }
-                messageNo++;
+            producer.beginTransaction();
+            for (int i = 0; i < 100; i++) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("ID", i);
+                map.put("NAME", "zhouxiaoge-" + i);
+                map.put("AGE", (int) (Math.random() * 100));
+                map.put("SEX", i % 2);
+                ObjectMapper objectMapper = new ObjectMapper();
+                String s = objectMapper.writeValueAsString(map);
+                producer.send(new ProducerRecord<>("zmy", Integer.toString(i), s));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
+            producer.commitTransaction();
+        } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
             producer.close();
+        } catch (KafkaException e) {
+            producer.abortTransaction();
         }
-    }
-
-    public static void main(String[] args) {
-        KafkaProducerTest test = new KafkaProducerTest("zhouxiaoge001");
-        Thread thread = new Thread(test);
-        thread.start();
     }
 }

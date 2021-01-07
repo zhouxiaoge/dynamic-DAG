@@ -34,6 +34,7 @@ public class RDBMSTaskJob implements Job {
                     .set("ID", contextData.get("ID"))
                     .set("NAME", contextData.get("NAME"))
                     .set("AGE", contextData.get("AGE"))
+                    .set("THREAD_NAME", contextData.get("THREAD_NAME"))
                     .set("SEX", contextData.get("SEX"));
             Db.use().insert(set);
             return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), null, contextData));

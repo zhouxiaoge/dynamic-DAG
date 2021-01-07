@@ -1,6 +1,6 @@
-package com.zhouxiaoge.kaka;
+package com.zhouxiaoge.dag.kafka;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -9,14 +9,12 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
-
-public class KafkaConsumerTest {
-    private static final String GROUP_ID = "groupA";
-
-    public static void main(String[] args) {
+@Slf4j
+public class DagKafkaConsumer {
+    public void consumer() {
         Properties props = new Properties();
         props.put("bootstrap.servers", "192.168.124.13:9092");
-        props.put("group.id", GROUP_ID);
+        props.put("group.id", "GROUP_ID");
         props.setProperty("enable.auto.commit", "true");
         props.setProperty("auto.commit.interval.ms", "1000");
         props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -31,6 +29,5 @@ public class KafkaConsumerTest {
                 System.out.println("-------------------------");
             }
         }
-
     }
 }
