@@ -1,0 +1,15 @@
+##springboot-jdbc数据库连接
+spring:
+  datasource:
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&serverTimezone=UTC
+management:
+  endpoint:
+    health:
+      show-details: always #http://127.0.0.1:8080/actuator/health
+  endpoints:
+    web:
+      exposure:
+        include: '*'

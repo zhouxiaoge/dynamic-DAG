@@ -1,54 +1,29 @@
-package com.zhouxiaoge.dag.controller;
+package com.zhouxiaoge.dag.multithreading;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhouxiaoge.dag.service.ExecService;
-import io.micrometer.core.annotation.Timed;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.joo.promise4j.PromiseException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * @author 周小哥
- * @date 2021年1月9日22点52分
- */
-@RestController
-public class DagController {
+@SpringBootTest
+public class MultithreadingTest {
 
-    private final ExecService execService;
+    @Autowired
+    private ExecService execService;
 
-    public DagController(ExecService execService) {
-        this.execService = execService;
-    }
-
-    @GetMapping("/syncDag/{variable}")
-    public String syncDag(@PathVariable("variable") String variable, @RequestParam("map") Map<String, Object> map) throws PromiseException, InterruptedException {
-        boolean b = execService.syncDagExecTask(variable, map);
-        return String.valueOf(b);
-    }
-
-    @GetMapping("/asynDag/{variable}")
-    public String asynDag(@PathVariable("variable") String variable, @RequestParam("map") Map<String, Object> map) throws PromiseException, InterruptedException {
-        boolean b = execService.asynExecTask(variable, map);
-        return String.valueOf(b);
-    }
-
-    /**
-     * http://127.0.0.1:8080/actuator/health
-     */
-    @GetMapping("/kafka")
-    @Timed(value = "all.kafka", longTask = true)
-    public String syncDag() {
+    @Test
+    public void multithreadingTest() {
         Properties props = new Properties();
         props.put("bootstrap.servers", "192.168.124.13:9092");
         props.put("group.id", "GROUP_ID");
@@ -59,7 +34,7 @@ public class DagController {
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList("zmy"));
         execService.generateTaskDependant();
-        System.out.println("------------------------------Kafka启动拉取数据------------------------------------");
+        System.out.println("------------------------------Kafka启动拉取数据-----------------------------------");
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
             for (ConsumerRecord<String, String> record : records) {

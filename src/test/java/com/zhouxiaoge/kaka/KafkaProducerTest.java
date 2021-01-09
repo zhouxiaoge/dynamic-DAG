@@ -29,7 +29,7 @@ public class KafkaProducerTest {
 
         try {
             producer.beginTransaction();
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1000; i++) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("ID", i);
                 map.put("NAME", "zhouxiaoge-" + i);
