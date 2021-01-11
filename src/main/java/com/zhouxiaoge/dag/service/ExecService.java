@@ -2,6 +2,7 @@ package com.zhouxiaoge.dag.service;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.FIFOCache;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zhouxiaoge.dag.jobs.PrintTaskJob;
 import com.zhouxiaoge.dag.jobs.RDBMSTaskJob;
@@ -66,5 +67,25 @@ public class ExecService {
         list.add(task2);
         list.add(task3);
         newFIFOCache.put(StrUtil.isBlankIfStr(dagKey) ? "dagKey" : dagKey, list);
+    }
+
+    public boolean syncDagExecTask(String dagKey, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
+        DefaultTaskMapper taskMapper = new DefaultTaskMapper()
+                .with("print-task-job", PrintTaskJob::new)
+                .with("sum-task-job", SumTaskJob::new)
+                .with("rdbms-task-job", RDBMSTaskJob::new);
+        MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
+        HashedTaskRouter taskRouter = new HashedTaskRouter(2);
+        PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
+        DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
+        submitter.start();
+        Batch<Task> taskBatch = Batch.of("batchId-" + dagKey + IdUtil.fastSimpleUUID(),
+                Task.of("1", "task1-" + IdUtil.fastSimpleUUID(), "print-task-job", new String[]{"2"}, parameterMap),
+                Task.of("2", "task2-" + IdUtil.fastSimpleUUID(), "sum-task-job", new String[]{"3"}),
+                Task.of("3", "task3-" + IdUtil.fastSimpleUUID(), "rdbms-task-job", new String[0]));
+        Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
+        TaskResult taskResult = taskResultThrowablePromise.get();
+        submitter.stop();
+        return taskResult.isSuccessful();
     }
 }
