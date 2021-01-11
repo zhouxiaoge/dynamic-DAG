@@ -35,7 +35,7 @@ public class DagKafkaConsumer {
             props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
             props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
             KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-            KafkaConsumerThread kafkaConsumerThread = new KafkaConsumerThread("Thread-" + i, consumer, KafkaUtils.KAFKA_TOPIC);
+            KafkaConsumerThread kafkaConsumerThread = new KafkaConsumerThread("DAG-Thread-" + i, consumer, KafkaUtils.KAFKA_TOPIC);
             kafkaConsumerThread.setDagKey(dagKey);
             kafkaConsumerThread.setExecService(execService);
             kafkaConsumerThread.start();

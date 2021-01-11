@@ -2,7 +2,6 @@ package com.zhouxiaoge.dag.service;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.FIFOCache;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zhouxiaoge.dag.jobs.PrintTaskJob;
 import com.zhouxiaoge.dag.jobs.RDBMSTaskJob;
@@ -46,9 +45,7 @@ public class ExecService {
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
         submitter.start();
         list.forEach(task -> {
-            if ("1".equals(task.getId())) {
-                task.getTaskData().putAll(parameterMap);
-            }
+            task.getTaskData().putAll(parameterMap);
         });
         Task[] tasks = list.toArray(new Task[0]);
         Batch<Task> taskBatch = Batch.of("batchId-" + Thread.currentThread().getId(), tasks);
@@ -79,10 +76,10 @@ public class ExecService {
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
         submitter.start();
-        Batch<Task> taskBatch = Batch.of("batchId-" + dagKey + IdUtil.fastSimpleUUID(),
-                Task.of("1", "task1-" + IdUtil.fastSimpleUUID(), "print-task-job", new String[]{"2"}, parameterMap),
-                Task.of("2", "task2-" + IdUtil.fastSimpleUUID(), "sum-task-job", new String[]{"3"}),
-                Task.of("3", "task3-" + IdUtil.fastSimpleUUID(), "rdbms-task-job", new String[0]));
+        Batch<Task> taskBatch = Batch.of("batchId-" + dagKey,
+                Task.of("1", "task1", "print-task-job", new String[]{"2"}, parameterMap),
+                Task.of("2", "task2", "sum-task-job", new String[]{"3"}, parameterMap),
+                Task.of("3", "task3", "rdbms-task-job", new String[0], parameterMap));
         Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
         TaskResult taskResult = taskResultThrowablePromise.get();
         submitter.stop();

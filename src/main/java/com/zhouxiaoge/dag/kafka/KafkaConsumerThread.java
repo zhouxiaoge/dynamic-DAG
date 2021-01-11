@@ -49,7 +49,7 @@ public class KafkaConsumerThread extends ShutdownableThread {
                 String value = stringStringConsumerRecord.value();
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map map = objectMapper.readValue(value, Map.class);
-                map.put("THREAD_NAME", Thread.currentThread().getName());
+                map.put("THREAD_NAME", name());
                 // this.execService.asynExecTask(this.dagKey, map);
                 this.execService.syncDagExecTask(this.dagKey, map);
             }
