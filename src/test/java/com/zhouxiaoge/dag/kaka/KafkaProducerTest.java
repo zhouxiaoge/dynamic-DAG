@@ -2,6 +2,7 @@ package com.zhouxiaoge.dag.kaka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zhouxiaoge.dag.kafka.KafkaUtils;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -17,14 +18,13 @@ import java.util.Map;
 import java.util.Properties;
 
 
-
 public class KafkaProducerTest {
 
 
     public static void main(String[] args) throws JsonProcessingException {
-        String BOOTSTRAP_SERVERS = "192.168.124.13:9092,192.168.124.14:9092,192.168.124.15:9092";
+
         Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.BOOTSTRAP_SERVERS);
         props.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "my-transactional-id");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -32,7 +32,7 @@ public class KafkaProducerTest {
         producer.initTransactions();
         try {
             producer.beginTransaction();
-            for (int i = 3000; i < 4000; i++) {
+            for (int i = 1; i <= 1000; i++) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("ID", i);
                 map.put("NAME", "zhouxiaoge-" + i);
@@ -42,7 +42,7 @@ public class KafkaProducerTest {
                 String s = objectMapper.writeValueAsString(map);
                 System.out.println("-------------------------------------------------------");
                 System.out.println(s);
-                producer.send(new ProducerRecord<>("zmy", Integer.toString(i), s));
+                producer.send(new ProducerRecord<>(KafkaUtils.KAFKA_TOPIC, Integer.toString(i), s));
             }
             producer.commitTransaction();
         } catch (ProducerFencedException | OutOfOrderSequenceException | AuthorizationException e) {
