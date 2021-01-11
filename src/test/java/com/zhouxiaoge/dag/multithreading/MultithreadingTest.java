@@ -33,7 +33,7 @@ public class MultithreadingTest {
         props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList("zmy"));
-        execService.generateTaskDependant();
+        execService.generateTaskDependant("dagKey");
         System.out.println("------------------------------Kafka启动拉取数据-----------------------------------");
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));

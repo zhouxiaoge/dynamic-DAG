@@ -28,11 +28,11 @@ public class KafkaProducerTest {
         props.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "my-transactional-id");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        Producer<String, String> producer = new KafkaProducer<>(props, new StringSerializer(), new StringSerializer());
+        Producer<String, String> producer = new KafkaProducer<>(props);
         producer.initTransactions();
         try {
             producer.beginTransaction();
-            for (int i = 1000; i < 2000; i++) {
+            for (int i = 3000; i < 4000; i++) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("ID", i);
                 map.put("NAME", "zhouxiaoge-" + i);

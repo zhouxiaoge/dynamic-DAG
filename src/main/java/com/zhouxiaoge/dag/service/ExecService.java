@@ -1,5 +1,8 @@
 package com.zhouxiaoge.dag.service;
 
+import cn.hutool.cache.CacheUtil;
+import cn.hutool.cache.impl.FIFOCache;
+import cn.hutool.core.util.StrUtil;
 import com.zhouxiaoge.dag.jobs.PrintTaskJob;
 import com.zhouxiaoge.dag.jobs.RDBMSTaskJob;
 import com.zhouxiaoge.dag.jobs.SumTaskJob;
@@ -21,33 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author gqzmy
+ */
 @Service
 public class ExecService {
 
-    public boolean syncDagExecTask(String variable, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
-        DefaultTaskMapper taskMapper = new DefaultTaskMapper().with("print-task-job", PrintTaskJob::new)
-                .with("sum-task-job", SumTaskJob::new);
-        MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
-        HashedTaskRouter taskRouter = new HashedTaskRouter(2);
-        PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
-        DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
-        submitter.start();
-        Batch<Task> taskBatch = Batch.of("batchId-" + variable,
-                Task.of("1", "task1", "print-task-job", new String[]{"2"}, parameterMap),
-                Task.of("2", "task2", "sum-task-job", new String[]{"3"}),
-                Task.of("3", "task3", "print-task-job", new String[]{"4"}),
-                Task.of("4", "task4", "sum-task-job", new String[]{"5"}),
-                Task.of("5", "task5", "print-task-job", new String[0]));
-        Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
-        TaskResult taskResult = taskResultThrowablePromise.get();
-        submitter.stop();
-        return taskResult.isSuccessful();
-    }
 
+    FIFOCache<Object, Object> newFIFOCache = CacheUtil.newFIFOCache(3);
 
-    Map<String, List<Task>> map = new HashMap<>();
-
-    public boolean asynExecTask(String variable, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
+    public boolean asynExecTask(String dagKey, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
+        List<Task> list = (List<Task>) newFIFOCache.get(dagKey);
         DefaultTaskMapper taskMapper = new DefaultTaskMapper()
                 .with("print-task-job", PrintTaskJob::new)
                 .with("sum-task-job", SumTaskJob::new)
@@ -57,9 +44,8 @@ public class ExecService {
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
         submitter.start();
-        List<Task> list = map.get(variable);
         list.forEach(task -> {
-            if (task.getId().equals("1")) {
+            if ("1".equals(task.getId())) {
                 task.getTaskData().putAll(parameterMap);
             }
         });
@@ -71,7 +57,7 @@ public class ExecService {
         return taskResult.isSuccessful();
     }
 
-    public void generateTaskDependant() {
+    public void generateTaskDependant(String dagKey) {
         List<Task> list = new ArrayList<>();
         Task task1 = new DefaultTask("1", "task1", "print-task-job", new String[]{"2"}, new HashMap<>());
         Task task2 = new DefaultTask("2", "task2", "sum-task-job", new String[]{"3"}, new HashMap<>());
@@ -79,6 +65,6 @@ public class ExecService {
         list.add(task1);
         list.add(task2);
         list.add(task3);
-        map.put("zhouxiaoge", list);
+        newFIFOCache.put(StrUtil.isBlankIfStr(dagKey) ? "dagKey" : dagKey, list);
     }
 }

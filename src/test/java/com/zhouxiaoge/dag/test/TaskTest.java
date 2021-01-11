@@ -14,7 +14,7 @@ public class TaskTest {
     @Test
     public void syncTest() throws PromiseException, InterruptedException {
         ExecService execService = new ExecService();
-        execService.generateTaskDependant();
+        execService.generateTaskDependant("dagKey");
         for (int i = 0; i < 10; i++) {
             Map<String, Object> map = new HashMap<>();
             map.put("ID", i);
@@ -29,7 +29,7 @@ public class TaskTest {
     public void asynTest() throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
         ExecService execService = new ExecService();
-        execService.generateTaskDependant();
+        execService.generateTaskDependant("dagKey");
         for (int i = 0; i < 10; i++) {
             Thread.sleep(1000);
             int finalI = i;
