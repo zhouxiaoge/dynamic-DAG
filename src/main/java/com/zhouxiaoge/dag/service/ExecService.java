@@ -2,6 +2,7 @@ package com.zhouxiaoge.dag.service;
 
 import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.LFUCache;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zhouxiaoge.dag.jobs.PrintTaskJob;
 import com.zhouxiaoge.dag.jobs.RDBMSTaskJob;
@@ -44,7 +45,8 @@ public class ExecService {
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
         submitter.start();
         List<Task> list = DAG_TASKS_RELATION.get(dagKey);
-        Task[] tasks = list.stream().peek(task -> task.getTaskData().putAll(parameterMap)).toArray(Task[]::new);
+        List<Task> newTaskList = ObjectUtil.cloneByStream(list);
+        Task[] tasks = newTaskList.stream().peek(task -> task.getTaskData().putAll(parameterMap)).toArray(Task[]::new);
         Batch<Task> taskBatch = Batch.of("batchId-" + Thread.currentThread().getId(), tasks);
         Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
         TaskResult taskResult = taskResultThrowablePromise.get();

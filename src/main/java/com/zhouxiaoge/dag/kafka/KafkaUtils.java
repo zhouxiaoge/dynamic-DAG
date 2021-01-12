@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
  */
 public class KafkaUtils {
 
-    public static final String BOOTSTRAP_SERVERS = "192.168.124.13:9092,192.168.124.14:9092,192.168.124.15:9092";
+    // public static final String BOOTSTRAP_SERVERS = "192.168.124.13:9092,192.168.124.14:9092,192.168.124.15:9092";
+    public static final String BOOTSTRAP_SERVERS = "192.168.245.149:9092,192.168.245.150:9092,192.168.245.151:9092";
     public static final String KAFKA_TOPIC = "zmy";
 
     public static Properties initKafkaProducerProperties() {
