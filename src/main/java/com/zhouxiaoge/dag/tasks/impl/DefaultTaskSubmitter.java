@@ -26,15 +26,15 @@ public class DefaultTaskSubmitter implements TaskSubmitter {
 
     @Override
     public Promise<TaskResult, Throwable> submitTasks(Batch<Task> batch) {
-        return taskSorter.sortTasks(batch) //
-                .map(this::mapTasks) //
+        return taskSorter.sortTasks(batch)
+                .map(this::mapTasks)
                 .then(taskRunner::runTasks);
     }
 
     private Batch<Job> mapTasks(Batch<TaskTopo> batch) {
-        Job[] jobs = Arrays.stream(batch.getBatch()) //
-                .map(taskMapper::mapTask) //
-                .toArray(size -> new Job[size]);
+        Job[] jobs = Arrays.stream(batch.getBatch())
+                .map(taskMapper::mapTask)
+                .toArray(Job[]::new);
         return new DefaultBatch<>(batch.getId(), jobs);
     }
 

@@ -1,5 +1,6 @@
 package com.zhouxiaoge.dag.service;
 
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zhouxiaoge.dag.cache.DagCacheUtils;
@@ -23,30 +24,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author gqzmy
+ * @author 周小哥
  */
 @Service
 public class ExecService {
 
+    public static final Map<String, DefaultTaskSubmitter> DAG_DEFAULT_TASK_SUBMITTER = new ConcurrentHashMap<>();
+
     public boolean asynExecTask(String dagKey, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
-        DefaultTaskMapper taskMapper = new DefaultTaskMapper()
-                .with("print-task-job", PrintTaskJob::new)
-                .with("sum-task-job", SumTaskJob::new)
-                .with("rdbms-task-job", RDBMSTaskJob::new);
-
-        MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
-        HashedTaskRouter taskRouter = new HashedTaskRouter(2);
-        PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
-        DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
-
+        DefaultTaskSubmitter submitter = DAG_DEFAULT_TASK_SUBMITTER.get(dagKey);
         submitter.start();
         List<Task> list = DagCacheUtils.getDagTasksRelation(dagKey);
         List<Task> newTaskList = ObjectUtil.cloneByStream(list);
 
         Task[] tasks = newTaskList.stream().peek(task -> task.getTaskData().putAll(parameterMap)).toArray(Task[]::new);
-        Batch<Task> taskBatch = Batch.of(dagKey, tasks);
+        Batch<Task> taskBatch = Batch.of(dagKey + "-" + IdUtil.fastSimpleUUID(), tasks);
         Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
         TaskResult taskResult = taskResultThrowablePromise.get();
         submitter.stop();
@@ -55,16 +50,14 @@ public class ExecService {
 
     public void generateTaskDependant(String dagKey) {
         List<Task> list = new ArrayList<>();
-        Task task1 = new DefaultTask("1", "task1", "print-task-job", new String[]{"2"}, new HashMap<>());
-        Task task2 = new DefaultTask("2", "task2", "sum-task-job", new String[]{"3"}, new HashMap<>());
-        Task task3 = new DefaultTask("3", "task5", "rdbms-task-job", new String[0], new HashMap<>());
+        Task task1 = new DefaultTask("1", "task1", "print-task-job", new String[]{"2"}, new HashMap<>(16));
+        Task task2 = new DefaultTask("2", "task2", "sum-task-job", new String[]{"3"}, new HashMap<>(16));
+        Task task3 = new DefaultTask("3", "task5", "rdbms-task-job", new String[0], new HashMap<>(16));
         list.add(task1);
         list.add(task2);
         list.add(task3);
         DagCacheUtils.putDagTasksRelation(StrUtil.isBlankIfStr(dagKey) ? "dagKey" : dagKey, list);
-    }
 
-    public boolean syncDagExecTask(String dagKey, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
         DefaultTaskMapper taskMapper = new DefaultTaskMapper()
                 .with("print-task-job", PrintTaskJob::new)
                 .with("sum-task-job", SumTaskJob::new)
@@ -73,14 +66,6 @@ public class ExecService {
         HashedTaskRouter taskRouter = new HashedTaskRouter(2);
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
-        submitter.start();
-        Batch<Task> taskBatch = Batch.of("batchId-" + dagKey,
-                Task.of("1", "task1", "print-task-job", new String[]{"2"}, parameterMap),
-                Task.of("2", "task2", "sum-task-job", new String[]{"3"}, parameterMap),
-                Task.of("3", "task3", "rdbms-task-job", new String[0], parameterMap));
-        Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
-        TaskResult taskResult = taskResultThrowablePromise.get();
-        submitter.stop();
-        return taskResult.isSuccessful();
+        DAG_DEFAULT_TASK_SUBMITTER.put(dagKey, submitter);
     }
 }

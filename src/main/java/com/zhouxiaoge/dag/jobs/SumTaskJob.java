@@ -11,7 +11,7 @@ import org.joo.promise4j.Promise;
 import java.util.Map;
 
 /**
- * @author gqzmy
+ * @author 周小哥
  */
 @Slf4j
 public class SumTaskJob implements Job {

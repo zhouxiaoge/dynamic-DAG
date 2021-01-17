@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author gqzmy
+ * @author 周小哥
  */
 @Getter
 public class DefaultBatchExecution implements BatchExecution {

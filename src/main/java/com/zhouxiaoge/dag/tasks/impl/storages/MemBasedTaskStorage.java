@@ -8,6 +8,9 @@ import org.joo.promise4j.Promise;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author 周小哥
+ */
 public class MemBasedTaskStorage implements TaskStorage {
 
     private Map<String, BatchExecution> executionMap = new ConcurrentHashMap<>();

@@ -50,8 +50,9 @@ public abstract class AbstractTaskQueue implements TaskQueue, TaskNotifier {
 
     @Override
     public Promise<TaskResult, Exception> notifyJobComplete(String batchId, String taskId, TaskResult result) {
-        if (result == null)
+        if (result == null) {
             result = new DefaultTaskResult(taskId, null);
+        }
         TaskResult theResult = result;
         return storage.fetchBatchExecution(batchId).then(batchExecution -> {
             Job job = batchExecution.mapTask(taskId);
