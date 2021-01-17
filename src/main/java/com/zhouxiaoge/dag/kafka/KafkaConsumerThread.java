@@ -1,7 +1,7 @@
 package com.zhouxiaoge.dag.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zhouxiaoge.dag.service.ExecService;
+import com.zhouxiaoge.dag.exec.DagExecutor;
 import kafka.utils.ShutdownableThread;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -22,7 +22,7 @@ public class KafkaConsumerThread extends ShutdownableThread {
     public static boolean isRunning = true;
     private final KafkaConsumer<String, String> kafkaConsumer;
 
-    private ExecService execService;
+    private DagExecutor dagExecutor;
 
     private String dagKey;
 
@@ -30,8 +30,8 @@ public class KafkaConsumerThread extends ShutdownableThread {
         this.dagKey = dagKey;
     }
 
-    public void setExecService(ExecService execService) {
-        this.execService = execService;
+    public void setExecService(DagExecutor dagExecutor) {
+        this.dagExecutor = dagExecutor;
     }
 
     public KafkaConsumerThread(String name, KafkaConsumer<String, String> kafkaConsumer, String topic) {
@@ -50,10 +50,15 @@ public class KafkaConsumerThread extends ShutdownableThread {
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map map = objectMapper.readValue(value, Map.class);
                 map.put("THREAD_NAME", name());
-                this.execService.asynExecTask(this.dagKey, map);
+                this.dagExecutor.asynExecTask(this.dagKey, map);
                 kafkaConsumer.commitSync();
-                // this.execService.syncDagExecTask(this.dagKey, map);
             }
         }
+    }
+
+    @Override
+    public void shutdown() {
+        super.shutdown();
+        isRunning = false;
     }
 }

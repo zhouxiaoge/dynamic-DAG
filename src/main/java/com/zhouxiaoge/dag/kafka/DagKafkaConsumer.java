@@ -1,11 +1,14 @@
 package com.zhouxiaoge.dag.kafka;
 
-import com.zhouxiaoge.dag.service.ExecService;
+import com.zhouxiaoge.dag.cache.DagCacheUtils;
+import com.zhouxiaoge.dag.exec.DagExecutor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -18,13 +21,14 @@ public class DagKafkaConsumer {
 
     private static final int KAFKA_THREAD_NUM = 3;
 
-    private final ExecService execService;
+    private final DagExecutor dagExecutor;
 
-    public DagKafkaConsumer(ExecService execService) {
-        this.execService = execService;
+    public DagKafkaConsumer(DagExecutor dagExecutor) {
+        this.dagExecutor = dagExecutor;
     }
 
     public void consumer(String dagKey) {
+        List<KafkaConsumerThread> kafkaConsumerThreadList = new ArrayList<>();
         for (int i = 0; i < KAFKA_THREAD_NUM; i++) {
             Properties props = new Properties();
             props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.BOOTSTRAP_SERVERS);
@@ -37,8 +41,10 @@ public class DagKafkaConsumer {
             KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
             KafkaConsumerThread kafkaConsumerThread = new KafkaConsumerThread("DAG-Thread-" + i, consumer, KafkaUtils.KAFKA_TOPIC);
             kafkaConsumerThread.setDagKey(dagKey);
-            kafkaConsumerThread.setExecService(execService);
+            kafkaConsumerThread.setExecService(dagExecutor);
             kafkaConsumerThread.start();
+            kafkaConsumerThreadList.add(kafkaConsumerThread);
         }
+        DagCacheUtils.putKafkaConsumerThreadList(dagKey, kafkaConsumerThreadList);
     }
 }

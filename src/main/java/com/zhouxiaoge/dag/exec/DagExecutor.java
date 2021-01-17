@@ -1,4 +1,4 @@
-package com.zhouxiaoge.dag.service;
+package com.zhouxiaoge.dag.exec;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -24,18 +24,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author 周小哥
  */
 @Service
-public class ExecService {
-
-    public static final Map<String, DefaultTaskSubmitter> DAG_DEFAULT_TASK_SUBMITTER = new ConcurrentHashMap<>();
+public class DagExecutor {
 
     public boolean asynExecTask(String dagKey, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
-        DefaultTaskSubmitter submitter = DAG_DEFAULT_TASK_SUBMITTER.get(dagKey);
+        DefaultTaskSubmitter submitter = DagCacheUtils.getDagDefaultTaskSubmitter(dagKey);
         submitter.start();
         List<Task> list = DagCacheUtils.getDagTasksRelation(dagKey);
         List<Task> newTaskList = ObjectUtil.cloneByStream(list);
@@ -66,6 +63,6 @@ public class ExecService {
         HashedTaskRouter taskRouter = new HashedTaskRouter(2);
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
-        DAG_DEFAULT_TASK_SUBMITTER.put(dagKey, submitter);
+        DagCacheUtils.putDagDefaultTaskSubmitter(dagKey, submitter);
     }
 }

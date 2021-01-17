@@ -2,7 +2,7 @@ package com.zhouxiaoge.dag.multithreading;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zhouxiaoge.dag.service.ExecService;
+import com.zhouxiaoge.dag.exec.DagExecutor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -20,7 +20,7 @@ import java.util.Properties;
 public class MultithreadingTest {
 
     @Autowired
-    private ExecService execService;
+    private DagExecutor dagExecutor;
 
     @Test
     public void multithreadingTest() {
@@ -33,7 +33,7 @@ public class MultithreadingTest {
         props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Collections.singletonList("zmy"));
-        execService.generateTaskDependant("dagKey");
+        dagExecutor.generateTaskDependant("dagKey");
         System.out.println("------------------------------Kafka启动拉取数据-----------------------------------");
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
@@ -46,7 +46,7 @@ public class MultithreadingTest {
                     Thread.sleep(1000);
                     Map map = objectMapper.readValue(value, Map.class);
                     map.put("THREAD_NAME", Thread.currentThread().getName());
-                    boolean b = execService.asynExecTask("zhouxiaoge", map);
+                    boolean b = dagExecutor.asynExecTask("zhouxiaoge", map);
                     System.out.println(b);
                 } catch (JsonProcessingException | InterruptedException | PromiseException e) {
                     e.printStackTrace();

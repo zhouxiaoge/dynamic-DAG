@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author 周小哥
@@ -27,9 +28,21 @@ public class DagController {
      * http://127.0.0.1:8080/actuator/health
      */
     @GetMapping("/start/{dagKey}")
-    @Timed(value = "all.kafka", longTask = true)
+    @Timed(value = "start.dag", longTask = true)
     public List<Task> startDag(@PathVariable("dagKey") String dagKey) {
         dagComponent.startDag(dagKey);
         return DagCacheUtils.getDagTasksRelation(dagKey);
+    }
+
+    @GetMapping("/stop/{dagKey}")
+    @Timed(value = "stop.dag", longTask = true)
+    public List<Task> stopDag(@PathVariable("dagKey") String dagKey) {
+        dagComponent.stopDag(dagKey);
+        return DagCacheUtils.getDagTasksRelation(dagKey);
+    }
+
+    @GetMapping("/dag/all")
+    public Set<String> getDagAll() {
+        return dagComponent.getDagAll();
     }
 }
