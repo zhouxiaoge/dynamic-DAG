@@ -2,7 +2,6 @@ package com.zhouxiaoge.dag.component;
 
 import com.zhouxiaoge.dag.kafka.DagKafkaConsumer;
 import com.zhouxiaoge.dag.service.ExecService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,11 +13,11 @@ public class DagComponent {
 
     private final ExecService execService;
 
-    @Autowired
-    private DagKafkaConsumer dagKafkaConsumer;
+    private final DagKafkaConsumer dagKafkaConsumer;
 
-    public DagComponent(ExecService execService) {
+    public DagComponent(ExecService execService, DagKafkaConsumer dagKafkaConsumer) {
         this.execService = execService;
+        this.dagKafkaConsumer = dagKafkaConsumer;
     }
 
     public void startDag(String dagKey) {

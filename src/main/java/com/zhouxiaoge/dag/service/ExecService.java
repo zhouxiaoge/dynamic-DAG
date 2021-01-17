@@ -1,9 +1,8 @@
 package com.zhouxiaoge.dag.service;
 
-import cn.hutool.cache.CacheUtil;
-import cn.hutool.cache.impl.LFUCache;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.zhouxiaoge.dag.cache.DagCacheUtils;
 import com.zhouxiaoge.dag.jobs.PrintTaskJob;
 import com.zhouxiaoge.dag.jobs.RDBMSTaskJob;
 import com.zhouxiaoge.dag.jobs.SumTaskJob;
@@ -31,9 +30,6 @@ import java.util.Map;
 @Service
 public class ExecService {
 
-
-    public static final LFUCache<String, List<Task>> DAG_TASKS_RELATION = CacheUtil.newLFUCache(200);
-
     public boolean asynExecTask(String dagKey, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
         DefaultTaskMapper taskMapper = new DefaultTaskMapper()
                 .with("print-task-job", PrintTaskJob::new)
@@ -44,10 +40,10 @@ public class ExecService {
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
         submitter.start();
-        List<Task> list = DAG_TASKS_RELATION.get(dagKey);
+        List<Task> list = DagCacheUtils.getDagTasksRelation(dagKey);
         List<Task> newTaskList = ObjectUtil.cloneByStream(list);
         Task[] tasks = newTaskList.stream().peek(task -> task.getTaskData().putAll(parameterMap)).toArray(Task[]::new);
-        Batch<Task> taskBatch = Batch.of("batchId-" + Thread.currentThread().getId(), tasks);
+        Batch<Task> taskBatch = Batch.of(dagKey, tasks);
         Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
         TaskResult taskResult = taskResultThrowablePromise.get();
         submitter.stop();
@@ -62,7 +58,7 @@ public class ExecService {
         list.add(task1);
         list.add(task2);
         list.add(task3);
-        DAG_TASKS_RELATION.put(StrUtil.isBlankIfStr(dagKey) ? "dagKey" : dagKey, list);
+        DagCacheUtils.putDagTasksRelation(StrUtil.isBlankIfStr(dagKey) ? "dagKey" : dagKey, list);
     }
 
     public boolean syncDagExecTask(String dagKey, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {

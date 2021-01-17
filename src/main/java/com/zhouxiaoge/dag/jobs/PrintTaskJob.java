@@ -8,9 +8,11 @@ import com.zhouxiaoge.dag.models.impl.results.DefaultTaskResult;
 import lombok.extern.slf4j.Slf4j;
 import org.joo.promise4j.Promise;
 
-import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author gqzmy
+ */
 @Slf4j
 public class PrintTaskJob implements Job {
 

@@ -1,10 +1,14 @@
 package com.zhouxiaoge.dag.controller;
 
+import com.zhouxiaoge.dag.cache.DagCacheUtils;
 import com.zhouxiaoge.dag.component.DagComponent;
+import com.zhouxiaoge.dag.models.Task;
 import io.micrometer.core.annotation.Timed;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author 周小哥
@@ -24,8 +28,8 @@ public class DagController {
      */
     @GetMapping("/start/{dagKey}")
     @Timed(value = "all.kafka", longTask = true)
-    public String startDag(@PathVariable("dagKey") String dagKey) {
+    public List<Task> startDag(@PathVariable("dagKey") String dagKey) {
         dagComponent.startDag(dagKey);
-        return "success";
+        return DagCacheUtils.getDagTasksRelation(dagKey);
     }
 }

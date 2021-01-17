@@ -12,8 +12,13 @@ import org.joo.promise4j.Promise;
 
 import java.util.Map;
 
+/**
+ * @author gqzmy
+ */
 @Slf4j
 public class RDBMSTaskJob implements Job {
+
+    private static final long serialVersionUID = -2296589918933132292L;
 
     private TaskTopo taskTopo;
 
@@ -35,7 +40,8 @@ public class RDBMSTaskJob implements Job {
                     .set("NAME", contextData.get("NAME"))
                     .set("AGE", contextData.get("AGE"))
                     .set("THREAD_NAME", contextData.get("THREAD_NAME"))
-                    .set("SEX", contextData.get("SEX"));
+                    .set("SEX", contextData.get("SEX"))
+                    .set("DAG_ID", context.getBatchId());
             Db.use().insert(set);
             return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), null, contextData));
 

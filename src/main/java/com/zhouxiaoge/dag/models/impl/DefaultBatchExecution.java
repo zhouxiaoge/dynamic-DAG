@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author gqzmy
+ */
 @Getter
 public class DefaultBatchExecution implements BatchExecution {
 
@@ -41,8 +44,7 @@ public class DefaultBatchExecution implements BatchExecution {
         String[] depended = job.getTaskTopo().getDependedTasks();
         if (depended.length == 0)
             return true;
-        return Arrays.stream(depended) //
-                .allMatch(this::hasCompleted);
+        return Arrays.stream(depended).allMatch(this::hasCompleted);
     }
 
     private boolean hasCompleted(String task) {
