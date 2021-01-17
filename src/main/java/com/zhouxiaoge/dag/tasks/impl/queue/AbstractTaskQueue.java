@@ -80,8 +80,8 @@ public abstract class AbstractTaskQueue implements TaskQueue, TaskNotifier {
                 map.putAll(data);
             }
             Map<String, Object> taskData = job.getTaskTopo().getTask().getTaskData();
-            map.putAll(taskData);
-            DefaultExecutionContext defaultExecutionContext = new DefaultExecutionContext(batchId, map);
+            taskData.putAll(map);
+            DefaultExecutionContext defaultExecutionContext = new DefaultExecutionContext(batchId, taskData);
             runJob(job, defaultExecutionContext);
         }
     }
@@ -89,13 +89,13 @@ public abstract class AbstractTaskQueue implements TaskQueue, TaskNotifier {
     protected void runJob(Job job, ExecutionContext context) {
         String batchId = context.getBatchId();
         String taskId = job.getTaskTopo().getTaskId();
-        doRunJob(job, context).then(result -> router.routeJob(this, batchId, job, result)) //
+        doRunJob(job, context).then(result -> router.routeJob(this, batchId, job, result))
                 .fail(ex -> router.routeJob(this, batchId, job, new FailedTaskResult(taskId, ex)));
     }
 
     protected void runChildJobs(String batchId, Job job, BatchExecution batchExecution) {
-        Job[] jobs = Arrays.stream(job.getTaskTopo().getDependantTasks()) //
-                .map(batchExecution::mapTask) //
+        Job[] jobs = Arrays.stream(job.getTaskTopo().getDependantTasks())
+                .map(batchExecution::mapTask)
                 .toArray(Job[]::new);
         runJobs(batchExecution, batchId, jobs);
     }
