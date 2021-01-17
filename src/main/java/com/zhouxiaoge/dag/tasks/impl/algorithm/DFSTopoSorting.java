@@ -9,8 +9,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
-
+/**
+ * @author 周小哥
+ */
 public class DFSTopoSorting {
 
     private HashSet<String> tmpMarks;
@@ -27,7 +28,7 @@ public class DFSTopoSorting {
 
     public DFSTopoSorting(Task[] tasks) {
         this.tasks = tasks;
-        this.taskMap = Arrays.stream(tasks) //
+        this.taskMap = Arrays.stream(tasks)
                 .collect(Collectors.toMap(Task::getId, Function.identity()));
     }
 
@@ -48,11 +49,12 @@ public class DFSTopoSorting {
     void visit(Task task) {
         String id = task.getId();
 
-        if (permMarks.contains(id))
+        if (permMarks.contains(id)) {
             return;
-        if (tmpMarks.contains(id))
+        }
+        if (tmpMarks.contains(id)) {
             throw new CyclicGraphDetectedException(id);
-
+        }
         tmpMarks.add(id);
 
         for (String adj : task.getDependants()) {
@@ -66,7 +68,7 @@ public class DFSTopoSorting {
     }
 
     private void assignGroup() {
-        this.groupMap = new HashMap<>();
+        this.groupMap = new HashMap<>(16);
         for (Task task : tasks) {
             groupMap.put(task.getId(), 0);
         }
@@ -80,15 +82,15 @@ public class DFSTopoSorting {
     }
 
     public TaskTopo[] topo() {
-        Map<String, List<String>> invertedEdges = new HashMap<>();
+        Map<String, List<String>> invertedEdges = new HashMap<>(16);
         for (Task task : tasks) {
             for (String adj : task.getDependants()) {
-                invertedEdges.computeIfAbsent(adj, k -> new ArrayList<>()) //
+                invertedEdges.computeIfAbsent(adj, k -> new ArrayList<>())
                         .add(task.getId());
             }
         }
-        return results.stream() //
-                .map(task -> toTaskTopo(invertedEdges, task)) //
+        return results.stream()
+                .map(task -> toTaskTopo(invertedEdges, task))
                 .toArray(TaskTopo[]::new);
     }
 
@@ -99,15 +101,5 @@ public class DFSTopoSorting {
 
     public Task[] results() {
         return this.results();
-    }
-
-    public Task[][] group() {
-        return groupMap.entrySet().stream() //
-                .collect(groupingBy(Map.Entry::getValue, //
-                        mapping(e -> taskMap.get(e.getKey()), toList()))) //
-                .entrySet().stream() //
-                .sorted((e1, e2) -> e1.getKey() - e2.getKey()) //
-                .map(e -> e.getValue().toArray(new Task[0])) //
-                .toArray(size -> new Task[size][]);
     }
 }

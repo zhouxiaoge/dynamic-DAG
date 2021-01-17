@@ -72,7 +72,7 @@ public abstract class AbstractTaskQueue implements TaskQueue, TaskNotifier {
             }
             String[] dependedTasks = job.getTaskTopo().getDependedTasks();
 
-            Map<String, Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>(16);
 
             for (String dependedTask : dependedTasks) {
                 Map<String, TaskResult> completedJobs = batchExecution.getCompletedJobs();

@@ -8,6 +8,9 @@ import com.zhouxiaoge.dag.tasks.TaskSorter;
 import com.zhouxiaoge.dag.tasks.impl.algorithm.DFSTopoSorting;
 import org.joo.promise4j.Promise;
 
+/**
+ * @author zhouxiaoge
+ */
 public class DAGTaskSorter implements TaskSorter {
 
     @Override

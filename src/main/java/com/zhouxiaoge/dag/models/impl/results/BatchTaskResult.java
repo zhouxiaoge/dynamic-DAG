@@ -30,7 +30,7 @@ public class BatchTaskResult implements TaskResult {
 
     private void checkForFailure() {
 
-        Map<String, Optional<Throwable>> failures = new HashMap<>();
+        Map<String, Optional<Throwable>> failures = new HashMap<>(16);
         for (String s : result.keySet()) {
             TaskResult taskResult = result.get(s);
             boolean successful = taskResult.isSuccessful();

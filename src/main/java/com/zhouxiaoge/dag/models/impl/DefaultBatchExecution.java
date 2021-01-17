@@ -42,8 +42,9 @@ public class DefaultBatchExecution implements BatchExecution {
     @Override
     public boolean canRun(Job job) {
         String[] depended = job.getTaskTopo().getDependedTasks();
-        if (depended.length == 0)
+        if (depended.length == 0) {
             return true;
+        }
         return Arrays.stream(depended).allMatch(this::hasCompleted);
     }
 
