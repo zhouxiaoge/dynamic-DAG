@@ -35,13 +35,16 @@ public class ExecService {
                 .with("print-task-job", PrintTaskJob::new)
                 .with("sum-task-job", SumTaskJob::new)
                 .with("rdbms-task-job", RDBMSTaskJob::new);
+
         MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
         HashedTaskRouter taskRouter = new HashedTaskRouter(2);
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
+
         submitter.start();
         List<Task> list = DagCacheUtils.getDagTasksRelation(dagKey);
         List<Task> newTaskList = ObjectUtil.cloneByStream(list);
+
         Task[] tasks = newTaskList.stream().peek(task -> task.getTaskData().putAll(parameterMap)).toArray(Task[]::new);
         Batch<Task> taskBatch = Batch.of(dagKey, tasks);
         Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
