@@ -2,13 +2,18 @@ package com.zhouxiaoge.dag.controller;
 
 import com.zhouxiaoge.dag.cache.DagCacheUtils;
 import com.zhouxiaoge.dag.component.DagComponent;
+import com.zhouxiaoge.dag.exec.DagExecutor;
 import com.zhouxiaoge.dag.models.Task;
 import io.micrometer.core.annotation.Timed;
+import org.joo.promise4j.PromiseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -17,6 +22,9 @@ import java.util.Set;
  */
 @RestController
 public class DagController {
+
+    @Autowired
+    private DagExecutor dagExecutor;
 
     private final DagComponent dagComponent;
 
@@ -45,4 +53,17 @@ public class DagController {
     public Set<String> getDagAll() {
         return dagComponent.getDagAll();
     }
+
+    @GetMapping("/restful/{dagKey}")
+    public void restfulDag(@PathVariable("dagKey") String dagKey) throws PromiseException, InterruptedException {
+        Map<String, Object> parameterMap = new HashMap<>();
+        parameterMap.put("ID", 1);
+        parameterMap.put("NAME", "zhouxiaoge-" + 1);
+        parameterMap.put("AGE", (int) (Math.random() * 100));
+        parameterMap.put("SEX", 1);
+        boolean restful = dagExecutor.asynExecTask(dagKey, parameterMap);
+        System.out.println("-----------------");
+        System.out.println(restful);
+    }
+
 }

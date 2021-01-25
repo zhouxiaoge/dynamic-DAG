@@ -16,7 +16,8 @@ public class DAGTaskSorter implements TaskSorter {
     @Override
     public Promise<Batch<TaskTopo>, Throwable> sortTasks(Batch<Task> batch) {
         try {
-            DFSTopoSorting sorter = new DFSTopoSorting(batch.getBatch());
+            Task[] tasks = batch.getBatch();
+            DFSTopoSorting sorter = new DFSTopoSorting(tasks);
             TaskTopo[] sortedTasks = sorter.sort().topo();
             return Promise.of(new DefaultBatch<>(batch.getId(), sortedTasks));
         } catch (Exception ex) {

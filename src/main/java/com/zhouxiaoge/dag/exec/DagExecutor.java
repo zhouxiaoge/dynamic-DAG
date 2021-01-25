@@ -11,6 +11,7 @@ import com.zhouxiaoge.dag.models.Batch;
 import com.zhouxiaoge.dag.models.Task;
 import com.zhouxiaoge.dag.models.TaskResult;
 import com.zhouxiaoge.dag.models.impl.DefaultTask;
+import com.zhouxiaoge.dag.node.Node;
 import com.zhouxiaoge.dag.tasks.impl.DefaultTaskMapper;
 import com.zhouxiaoge.dag.tasks.impl.DefaultTaskSubmitter;
 import com.zhouxiaoge.dag.tasks.impl.queue.PooledTaskRunner;
@@ -47,9 +48,15 @@ public class DagExecutor {
 
     public void generateTaskDependant(String dagKey) {
         List<Task> list = new ArrayList<>();
-        Task task1 = new DefaultTask("1", "task1", "print-task-job", new String[]{"2"}, new HashMap<>(16));
-        Task task2 = new DefaultTask("2", "task2", "sum-task-job", new String[]{"3"}, new HashMap<>(16));
-        Task task3 = new DefaultTask("3", "task5", "rdbms-task-job", new String[0], new HashMap<>(16));
+        Node node = new Node();
+        Map<String, Object> map = new HashMap<>();
+        map.put("variable", "variable—value");
+
+        node.setNodeData(map);
+
+        Task task1 = new DefaultTask("1", "task1", "print-task-job", new String[]{"2"}, new HashMap<>(16), node);
+        Task task2 = new DefaultTask("2", "task2", "sum-task-job", new String[]{"3"}, new HashMap<>(16), node);
+        Task task3 = new DefaultTask("3", "task5", "rdbms-task-job", new String[0], new HashMap<>(16), node);
         list.add(task1);
         list.add(task2);
         list.add(task3);

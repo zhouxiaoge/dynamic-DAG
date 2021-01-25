@@ -35,7 +35,7 @@ public class RDBMSTaskJob implements Job {
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
         try {
             Map<String, Object> contextData = context.getContextData();
-            Entity set = Entity.create("DAG_TEST")
+            Entity set = Entity.create("DAG_INFO")
                     .set("ID", contextData.get("ID"))
                     .set("NAME", contextData.get("NAME"))
                     .set("AGE", contextData.get("AGE"))

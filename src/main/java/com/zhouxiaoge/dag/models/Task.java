@@ -1,6 +1,7 @@
 package com.zhouxiaoge.dag.models;
 
 import com.zhouxiaoge.dag.models.impl.DefaultTask;
+import com.zhouxiaoge.dag.node.Node;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -18,6 +19,8 @@ public interface Task extends Serializable {
 
     String[] getDependants();
 
+    Node getNode();
+
     static Task of(String id, String name, String type) {
         return new DefaultTask(id, name, type, new String[0], Collections.emptyMap());
     }
@@ -28,5 +31,9 @@ public interface Task extends Serializable {
 
     static Task of(String id, String name, String type, String[] dependants, Map<String, Object> taskData) {
         return new DefaultTask(id, name, type, dependants, taskData);
+    }
+
+    static Task of(String id, String name, String type, String[] dependants, Map<String, Object> taskData, Node node) {
+        return new DefaultTask(id, name, type, dependants, taskData, node);
     }
 }
