@@ -17,13 +17,13 @@ import java.util.Properties;
  */
 
 @Component
-public class DagKafkaConsumer {
+public class MyKafkaConsumer {
 
     private static final int KAFKA_THREAD_NUM = 3;
 
     private final DagExecutor dagExecutor;
 
-    public DagKafkaConsumer(DagExecutor dagExecutor) {
+    public MyKafkaConsumer(DagExecutor dagExecutor) {
         this.dagExecutor = dagExecutor;
     }
 

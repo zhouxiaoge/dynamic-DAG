@@ -2,8 +2,6 @@ package com.zhouxiaoge.dag.component;
 
 import com.zhouxiaoge.dag.cache.DagCacheUtils;
 import com.zhouxiaoge.dag.exec.DagExecutor;
-import com.zhouxiaoge.dag.kafka.DagKafkaConsumer;
-import com.zhouxiaoge.dag.kafka.KafkaConsumerThread;
 import com.zhouxiaoge.dag.models.Task;
 import org.springframework.stereotype.Component;
 
@@ -20,23 +18,15 @@ public class DagComponent {
 
     private final DagExecutor dagExecutor;
 
-    private final DagKafkaConsumer dagKafkaConsumer;
-
-    public DagComponent(DagExecutor dagExecutor, DagKafkaConsumer dagKafkaConsumer) {
+    public DagComponent(DagExecutor dagExecutor) {
         this.dagExecutor = dagExecutor;
-        this.dagKafkaConsumer = dagKafkaConsumer;
     }
 
     public void startDag(String dagKey) {
         dagExecutor.generateTaskDependant(dagKey);
-        dagKafkaConsumer.consumer(dagKey);
     }
 
     public void stopDag(String dagKey) {
-        List<KafkaConsumerThread> kafkaConsumerThreadList = DagCacheUtils.getKafkaConsumerThreadList(dagKey);
-        for (KafkaConsumerThread kafkaConsumerThread : kafkaConsumerThreadList) {
-            kafkaConsumerThread.shutdown();
-        }
         DagCacheUtils.removeDagDefaultTaskSubmitter(dagKey);
         DagCacheUtils.removeDagTasksRelation(dagKey);
     }
