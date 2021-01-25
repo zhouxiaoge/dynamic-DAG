@@ -43,7 +43,7 @@ public class DagController {
         return DagCacheUtils.getDagTasksRelation(dagKey);
     }
 
-    @GetMapping("/dag/all")
+    @GetMapping("/all")
     public Set<String> getDagAll() {
         return dagComponent.getDagAll();
     }

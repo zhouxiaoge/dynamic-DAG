@@ -4,6 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.zhouxiaoge.dag.cache.DagCacheUtils;
+import com.zhouxiaoge.dag.constant.SysConstant;
 import com.zhouxiaoge.dag.jobs.PrintTaskJob;
 import com.zhouxiaoge.dag.jobs.RDBMSTaskJob;
 import com.zhouxiaoge.dag.jobs.SumTaskJob;
@@ -17,6 +18,7 @@ import com.zhouxiaoge.dag.tasks.impl.DefaultTaskSubmitter;
 import com.zhouxiaoge.dag.tasks.impl.queue.PooledTaskRunner;
 import com.zhouxiaoge.dag.tasks.impl.routers.HashedTaskRouter;
 import com.zhouxiaoge.dag.tasks.impl.storages.MemBasedTaskStorage;
+import lombok.extern.slf4j.Slf4j;
 import org.joo.promise4j.Promise;
 import org.joo.promise4j.PromiseException;
 import org.springframework.stereotype.Service;
@@ -26,24 +28,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.zhouxiaoge.dag.constant.SysConstant.*;
+
 /**
  * @author 周小哥
  */
+
+@Slf4j
 @Service
 public class DagExecutor {
 
-    public boolean asynExecTask(String dagKey, Map<String, Object> parameterMap) throws InterruptedException, PromiseException {
-        DefaultTaskSubmitter submitter = DagCacheUtils.getDagDefaultTaskSubmitter(dagKey);
-        submitter.start();
-        List<Task> list = DagCacheUtils.getDagTasksRelation(dagKey);
-        List<Task> newTaskList = ObjectUtil.cloneByStream(list);
+    public Map<String, Object> asynExecTask(String dagKey, Map<String, Object> parameterMap) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            DefaultTaskSubmitter submitter = DagCacheUtils.getDagDefaultTaskSubmitter(dagKey);
+            submitter.start();
+            List<Task> list = DagCacheUtils.getDagTasksRelation(dagKey);
+            List<Task> newTaskList = ObjectUtil.cloneByStream(list);
 
-        Task[] tasks = newTaskList.stream().peek(task -> task.getTaskData().putAll(parameterMap)).toArray(Task[]::new);
-        Batch<Task> taskBatch = Batch.of(dagKey + "-" + IdUtil.fastSimpleUUID(), tasks);
-        Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
-        TaskResult taskResult = taskResultThrowablePromise.get();
-        submitter.stop();
-        return taskResult.isSuccessful();
+            Task[] tasks = newTaskList.stream().peek(task -> task.getTaskData().putAll(parameterMap)).toArray(Task[]::new);
+            Batch<Task> taskBatch = Batch.of(dagKey + "-" + IdUtil.fastSimpleUUID(), tasks);
+            Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
+            TaskResult taskResult = taskResultThrowablePromise.get();
+            submitter.stop();
+            boolean successful = taskResult.isSuccessful();
+            result.put(RESULT, successful ? EXEC_RESULT_SUCCESS : EXEC_RESULT_FAIL);
+        } catch (PromiseException | InterruptedException e) {
+            log.error("处理数据" + parameterMap.toString() + "失败，失败原因", e);
+            result.put(RESULT, EXEC_RESULT_FAIL);
+            result.put(SysConstant.ERROR_MSG, e.getMessage());
+        }
+        return result;
     }
 
     public void generateTaskDependant(String dagKey) {

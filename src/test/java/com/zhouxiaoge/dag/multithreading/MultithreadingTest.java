@@ -6,7 +6,6 @@ import com.zhouxiaoge.dag.exec.DagExecutor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.joo.promise4j.PromiseException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,9 +45,9 @@ public class MultithreadingTest {
                     Thread.sleep(1000);
                     Map map = objectMapper.readValue(value, Map.class);
                     map.put("THREAD_NAME", Thread.currentThread().getName());
-                    boolean b = dagExecutor.asynExecTask("zhouxiaoge", map);
-                    System.out.println(b);
-                } catch (JsonProcessingException | InterruptedException | PromiseException e) {
+                    dagExecutor.asynExecTask("zhouxiaoge", map);
+
+                } catch (JsonProcessingException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }

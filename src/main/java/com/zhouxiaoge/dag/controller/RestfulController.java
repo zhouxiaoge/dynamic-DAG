@@ -1,13 +1,10 @@
 package com.zhouxiaoge.dag.controller;
 
 import com.zhouxiaoge.dag.exec.DagExecutor;
-import org.joo.promise4j.PromiseException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,14 +23,8 @@ public class RestfulController {
     }
 
     @GetMapping("/{dagKey}")
-    public void restfulDag(@PathVariable("dagKey") String dagKey) throws PromiseException, InterruptedException {
-        Map<String, Object> parameterMap = new HashMap<>();
-        parameterMap.put("ID", 1);
-        parameterMap.put("NAME", "zhouxiaoge-" + 1);
-        parameterMap.put("AGE", (int) (Math.random() * 100));
-        parameterMap.put("SEX", 1);
-        boolean restful = dagExecutor.asynExecTask(dagKey, parameterMap);
-        System.out.println("-----------------");
-        System.out.println(restful);
+    public ResponseEntity<Map<String, Object>> restfulDag(@PathVariable("dagKey") String dagKey, @RequestBody Map<String, Object> parameterMap) {
+        Map<String, Object> map = dagExecutor.asynExecTask(dagKey, parameterMap);
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }
