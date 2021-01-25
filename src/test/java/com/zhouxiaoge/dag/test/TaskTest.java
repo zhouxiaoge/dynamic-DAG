@@ -43,7 +43,7 @@ public class TaskTest {
                     map.put("SEX", finalI % 2);
                     System.out.println(dagExecutor.asynExecTask("zhouxiaoge", map));
                     Thread.sleep(1000);
-                } catch (InterruptedException | PromiseException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             });

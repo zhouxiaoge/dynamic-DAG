@@ -3,16 +3,14 @@ package com.zhouxiaoge.dag.node;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
  * @author 周小哥
- * @date 2021年01月14日 13点21分
+ * @date 2021年01月25日 22点39分
  */
 @Data
-public class Node implements Serializable {
-
-    private static final long serialVersionUID = -5090668307638634957L;
+public class Line implements Serializable {
+    private static final long serialVersionUID = 1950778224862681831L;
 
     /**
      * 节点名称
@@ -25,8 +23,12 @@ public class Node implements Serializable {
     private String nodeType;
 
     /**
-     * 节点数据
+     * 源点Id
      */
-    private Map<String, Object> nodeData;
+    private String sourceId;
 
+    /**
+     * 目标Id
+     */
+    private String target;
 }
