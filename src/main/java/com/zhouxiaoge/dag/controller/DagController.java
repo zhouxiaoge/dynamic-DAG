@@ -1,8 +1,11 @@
 package com.zhouxiaoge.dag.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.zhouxiaoge.dag.cache.DagCacheUtils;
 import com.zhouxiaoge.dag.component.DagComponent;
+import com.zhouxiaoge.dag.models.BatchExecution;
 import com.zhouxiaoge.dag.models.Task;
+import com.zhouxiaoge.dag.tasks.impl.storages.MemBasedTaskStorage;
 import io.micrometer.core.annotation.Timed;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -48,4 +52,15 @@ public class DagController {
         return dagComponent.getDagAll();
     }
 
+    @GetMapping("/storageSize/{dagKey}")
+    public String getMemBasedTaskStorageSize(@PathVariable("dagKey") String dagKey) {
+        MemBasedTaskStorage memBasedTaskStorage = DagCacheUtils.getMemBasedTaskStorage(dagKey);
+        if (!ObjectUtil.isEmpty(memBasedTaskStorage)) {
+            Map<String, BatchExecution> executionMap = memBasedTaskStorage.getExecutionMap();
+            if (!executionMap.isEmpty()) {
+                return String.valueOf(executionMap.size());
+            }
+        }
+        return "null";
+    }
 }
