@@ -3,6 +3,7 @@ package com.zhouxiaoge.dag.cache;
 import com.zhouxiaoge.dag.kafka.KafkaConsumerThread;
 import com.zhouxiaoge.dag.models.Task;
 import com.zhouxiaoge.dag.tasks.impl.DefaultTaskSubmitter;
+import com.zhouxiaoge.dag.tasks.impl.storages.MemBasedTaskStorage;
 
 import java.util.List;
 import java.util.Map;
@@ -70,4 +71,13 @@ public class DagCacheUtils {
         DAG_KAFKA_CONSUMER_THREAD.remove(dagKey);
     }
 
+    public static final Map<String, MemBasedTaskStorage> DAG_MEM_BASED_TASK_STORAGE = new ConcurrentHashMap<>();
+
+    public static void putMemBasedTaskStorage(String dagKey, MemBasedTaskStorage memBasedTaskStorage) {
+        DAG_MEM_BASED_TASK_STORAGE.put(dagKey, memBasedTaskStorage);
+    }
+
+    public static MemBasedTaskStorage getMemBasedTaskStorage(String dagKey) {
+        return DAG_MEM_BASED_TASK_STORAGE.get(dagKey);
+    }
 }

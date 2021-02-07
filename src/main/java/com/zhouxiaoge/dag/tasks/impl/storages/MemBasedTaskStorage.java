@@ -25,4 +25,8 @@ public class MemBasedTaskStorage implements TaskStorage {
         executionMap.put(id, batchExecution);
         return Promise.of(null);
     }
+
+    public Map<String, BatchExecution> getExecutionMap() {
+        return executionMap;
+    }
 }

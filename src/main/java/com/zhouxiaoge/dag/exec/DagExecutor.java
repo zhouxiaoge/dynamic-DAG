@@ -9,6 +9,7 @@ import com.zhouxiaoge.dag.jobs.PrintTaskJob;
 import com.zhouxiaoge.dag.jobs.RDBMSTaskJob;
 import com.zhouxiaoge.dag.jobs.SumTaskJob;
 import com.zhouxiaoge.dag.models.Batch;
+import com.zhouxiaoge.dag.models.BatchExecution;
 import com.zhouxiaoge.dag.models.Task;
 import com.zhouxiaoge.dag.models.TaskResult;
 import com.zhouxiaoge.dag.models.impl.DefaultTask;
@@ -40,23 +41,26 @@ public class DagExecutor {
 
     public Map<String, Object> asynExecTask(String dagKey, Map<String, Object> parameterMap) {
         Map<String, Object> result = new HashMap<>();
+        String batchId = dagKey + "-" + IdUtil.fastSimpleUUID();
         try {
             DefaultTaskSubmitter submitter = DagCacheUtils.getDagDefaultTaskSubmitter(dagKey);
-            submitter.start();
             List<Task> list = DagCacheUtils.getDagTasksRelation(dagKey);
             List<Task> newTaskList = ObjectUtil.cloneByStream(list);
 
             Task[] tasks = newTaskList.stream().peek(task -> task.getTaskData().putAll(parameterMap)).toArray(Task[]::new);
-            Batch<Task> taskBatch = Batch.of(dagKey + "-" + IdUtil.fastSimpleUUID(), tasks);
+            Batch<Task> taskBatch = Batch.of(batchId, tasks);
             Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
             TaskResult taskResult = taskResultThrowablePromise.get();
-            submitter.stop();
             boolean successful = taskResult.isSuccessful();
             result.put(RESULT, successful ? EXEC_RESULT_SUCCESS : EXEC_RESULT_FAIL);
         } catch (PromiseException | InterruptedException e) {
             log.error("处理数据" + parameterMap.toString() + "失败，失败原因", e);
             result.put(RESULT, EXEC_RESULT_FAIL);
             result.put(SysConstant.ERROR_MSG, e.getMessage());
+        } finally {
+            MemBasedTaskStorage memBasedTaskStorage = DagCacheUtils.getMemBasedTaskStorage(dagKey);
+            Map<String, BatchExecution> executionMap = memBasedTaskStorage.getExecutionMap();
+            executionMap.remove(batchId);
         }
         return result;
     }
@@ -82,6 +86,7 @@ public class DagExecutor {
                 .with("sum-task-job", SumTaskJob::new)
                 .with("rdbms-task-job", RDBMSTaskJob::new);
         MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
+        DagCacheUtils.putMemBasedTaskStorage(dagKey, taskStorage);
         HashedTaskRouter taskRouter = new HashedTaskRouter(2);
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
