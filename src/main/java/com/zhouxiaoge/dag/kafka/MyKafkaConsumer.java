@@ -1,5 +1,6 @@
 package com.zhouxiaoge.dag.kafka;
 
+import cn.hutool.core.util.IdUtil;
 import com.zhouxiaoge.dag.cache.DagCacheUtils;
 import com.zhouxiaoge.dag.exec.DagExecutor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -28,12 +29,13 @@ public class MyKafkaConsumer {
     }
 
     public void consumer(String dagKey) {
+        String groupId = "GROUP_ID-" + IdUtil.fastSimpleUUID();
         List<KafkaConsumerThread> kafkaConsumerThreadList = new ArrayList<>();
         for (int i = 0; i < KAFKA_THREAD_NUM; i++) {
             Properties props = new Properties();
             props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.BOOTSTRAP_SERVERS);
-            props.put(ConsumerConfig.GROUP_ID_CONFIG, "GROUP_ID");
-            props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+            props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+            props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
             props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
             props.setProperty(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
             props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
