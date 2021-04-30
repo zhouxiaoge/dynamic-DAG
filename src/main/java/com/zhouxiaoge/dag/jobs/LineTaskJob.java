@@ -32,6 +32,7 @@ public class LineTaskJob implements Job {
 
     @Override
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
+        log.info("------------------------------LineTaskJob-{}-------------------------------------", taskTopo.getTaskId());
         try {
             Map<String, Object> contextData = context.getContextData();
             System.out.println("LineTaskJob-->" + context.getBatchId() + ":" + contextData);

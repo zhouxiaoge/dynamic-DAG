@@ -21,7 +21,7 @@ public class TaskTest {
             map.put("NAME", "zhouxiaoge-" + i);
             map.put("AGE", (int) (Math.random() * 100));
             map.put("SEX", i % 2);
-            System.out.println(dagExecutor.asynExecTask("zhouxiaoge", map));
+            System.out.println(dagExecutor.asynchronizationExecTask("zhouxiaoge", map));
         }
     }
 
@@ -41,7 +41,7 @@ public class TaskTest {
                     map.put("NAME", "zhouxiaoge-" + finalI);
                     map.put("AGE", (int) (Math.random() * 100));
                     map.put("SEX", finalI % 2);
-                    System.out.println(dagExecutor.asynExecTask("zhouxiaoge", map));
+                    System.out.println(dagExecutor.asynchronizationExecTask("zhouxiaoge", map));
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

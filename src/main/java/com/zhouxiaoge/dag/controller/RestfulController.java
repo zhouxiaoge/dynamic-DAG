@@ -1,5 +1,6 @@
 package com.zhouxiaoge.dag.controller;
 
+import com.zhouxiaoge.dag.dto.RestfulDTO;
 import com.zhouxiaoge.dag.exec.DagExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,9 @@ public class RestfulController {
         this.dagExecutor = dagExecutor;
     }
 
-    @GetMapping("/{dagKey}")
-    public ResponseEntity<Map<String, Object>> restfulDag(@PathVariable("dagKey") String dagKey, @RequestBody Map<String, Object> parameterMap) {
-        Map<String, Object> map = dagExecutor.asynExecTask(dagKey, parameterMap);
+    @PostMapping("/invoking")
+    public ResponseEntity<Map<String, Object>> restfulDag(@RequestBody RestfulDTO restfulDTO) {
+        Map<String, Object> map = dagExecutor.asynchronizationExecTask(restfulDTO.getDagKey(), restfulDTO.getParameterMap());
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }

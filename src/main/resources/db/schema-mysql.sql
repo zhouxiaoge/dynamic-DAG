@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS DAG_INFO;
 
 create table DAG_INFO
 (
-    ID          int            not null comment '主键D' primary key,
+    ID          int            /*not null comment '主键D' primary key*/,
     NAME        varchar(255)   null comment '姓名',
     AGE         int            null comment '年龄',
     SEX         varchar(255)   null comment '性别',

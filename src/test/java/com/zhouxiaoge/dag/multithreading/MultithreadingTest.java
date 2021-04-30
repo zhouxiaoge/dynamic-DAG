@@ -45,7 +45,7 @@ public class MultithreadingTest {
                     Thread.sleep(1000);
                     Map map = objectMapper.readValue(value, Map.class);
                     map.put("THREAD_NAME", Thread.currentThread().getName());
-                    dagExecutor.asynExecTask("zhouxiaoge", map);
+                    dagExecutor.asynchronizationExecTask("zhouxiaoge", map);
 
                 } catch (JsonProcessingException | InterruptedException e) {
                     e.printStackTrace();

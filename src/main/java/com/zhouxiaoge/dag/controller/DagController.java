@@ -7,6 +7,8 @@ import com.zhouxiaoge.dag.models.BatchExecution;
 import com.zhouxiaoge.dag.models.Task;
 import com.zhouxiaoge.dag.tasks.impl.storages.MemBasedTaskStorage;
 import io.micrometer.core.annotation.Timed;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,9 +37,9 @@ public class DagController {
      */
     @GetMapping("/start/{dagKey}")
     @Timed(value = "start.dag", longTask = true)
-    public List<Task> startDag(@PathVariable("dagKey") String dagKey) {
+    public ResponseEntity<List<Task>> startDag(@PathVariable("dagKey") String dagKey) {
         dagComponent.startDag(dagKey);
-        return DagCacheUtils.getDagTasksRelation(dagKey);
+        return new ResponseEntity<>(DagCacheUtils.getDagTasksRelation(dagKey), HttpStatus.OK);
     }
 
     @GetMapping("/stop/{dagKey}")

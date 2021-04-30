@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.zhouxiaoge.dag.constant.SysConstant.*;
 
@@ -39,7 +41,7 @@ import static com.zhouxiaoge.dag.constant.SysConstant.*;
 @Service
 public class DagExecutor {
 
-    public Map<String, Object> asynExecTask(String dagKey, Map<String, Object> parameterMap) {
+    public Map<String, Object> asynchronizationExecTask(String dagKey, Map<String, Object> parameterMap) {
         Map<String, Object> result = new HashMap<>();
         String batchId = dagKey + "-" + IdUtil.fastSimpleUUID();
         try {
@@ -50,17 +52,23 @@ public class DagExecutor {
             Task[] tasks = newTaskList.stream().peek(task -> task.getTaskData().putAll(parameterMap)).toArray(Task[]::new);
             Batch<Task> taskBatch = Batch.of(batchId, tasks);
             Promise<TaskResult, Throwable> taskResultThrowablePromise = submitter.submitTasks(taskBatch);
-            TaskResult taskResult = taskResultThrowablePromise.get();
+            TaskResult taskResult = taskResultThrowablePromise.get(1, TimeUnit.MINUTES);
             boolean successful = taskResult.isSuccessful();
             result.put(RESULT, successful ? EXEC_RESULT_SUCCESS : EXEC_RESULT_FAIL);
         } catch (PromiseException | InterruptedException e) {
-            log.error("处理数据" + parameterMap.toString() + "失败，失败原因", e);
+            log.error("处理数据" + parameterMap.toString() + "失败，失败原因:", e);
+            result.put(RESULT, EXEC_RESULT_FAIL);
+            result.put(SysConstant.ERROR_MSG, e.getMessage());
+        } catch (TimeoutException e) {
+            log.error("处理数据" + parameterMap.toString() + "失败，失败原因:", e);
             result.put(RESULT, EXEC_RESULT_FAIL);
             result.put(SysConstant.ERROR_MSG, e.getMessage());
         } finally {
             MemBasedTaskStorage memBasedTaskStorage = DagCacheUtils.getMemBasedTaskStorage(dagKey);
-            Map<String, BatchExecution> executionMap = memBasedTaskStorage.getExecutionMap();
-            executionMap.remove(batchId);
+            if (null != memBasedTaskStorage) {
+                Map<String, BatchExecution> executionMap = memBasedTaskStorage.getExecutionMap();
+                executionMap.remove(batchId);
+            }
         }
         return result;
     }
