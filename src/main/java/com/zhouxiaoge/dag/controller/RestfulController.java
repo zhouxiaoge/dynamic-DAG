@@ -25,7 +25,7 @@ public class RestfulController {
 
     @PostMapping("/invoking")
     public ResponseEntity<Map<String, Object>> restfulDag(@RequestBody RestfulDTO restfulDTO) {
-        Map<String, Object> map = dagExecutor.asynchronizationExecTask(restfulDTO.getDagKey(), restfulDTO.getParameterMap());
+        Map<String, Object> map = dagExecutor.synchronizationExecTask(restfulDTO.getDagKey(), restfulDTO.getParameterMap());
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 }

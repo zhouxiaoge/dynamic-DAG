@@ -41,26 +41,32 @@ public class DefaultTask implements Task {
         this.node = node;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public String[] getDependants() {
         return dependants;
     }
 
+    @Override
     public Map<String, Object> getTaskData() {
         return taskData;
     }
 
+    @Override
     public Node getNode() {
         return node;
     }

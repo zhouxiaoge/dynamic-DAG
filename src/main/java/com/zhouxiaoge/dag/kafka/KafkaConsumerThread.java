@@ -50,7 +50,7 @@ public class KafkaConsumerThread extends ShutdownableThread {
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map map = objectMapper.readValue(value, Map.class);
                 map.put("THREAD_NAME", name());
-                this.dagExecutor.asynchronizationExecTask(this.dagKey, map);
+                this.dagExecutor.synchronizationExecTask(this.dagKey, map);
                 kafkaConsumer.commitSync();
             }
         }

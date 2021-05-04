@@ -41,8 +41,8 @@ import static com.zhouxiaoge.dag.constant.SysConstant.*;
 @Service
 public class DagExecutor {
 
-    public Map<String, Object> asynchronizationExecTask(String dagKey, Map<String, Object> parameterMap) {
-        Map<String, Object> result = new HashMap<>();
+    public Map<String, Object> synchronizationExecTask(String dagKey, Map<String, Object> parameterMap) {
+        Map<String, Object> result = new HashMap<>(1);
         String batchId = dagKey + "-" + IdUtil.fastSimpleUUID();
         try {
             DefaultTaskSubmitter submitter = DagCacheUtils.getDagDefaultTaskSubmitter(dagKey);
@@ -55,11 +55,7 @@ public class DagExecutor {
             TaskResult taskResult = taskResultThrowablePromise.get(1, TimeUnit.MINUTES);
             boolean successful = taskResult.isSuccessful();
             result.put(RESULT, successful ? EXEC_RESULT_SUCCESS : EXEC_RESULT_FAIL);
-        } catch (PromiseException | InterruptedException e) {
-            log.error("处理数据" + parameterMap.toString() + "失败，失败原因:", e);
-            result.put(RESULT, EXEC_RESULT_FAIL);
-            result.put(SysConstant.ERROR_MSG, e.getMessage());
-        } catch (TimeoutException e) {
+        } catch (PromiseException | InterruptedException | TimeoutException e) {
             log.error("处理数据" + parameterMap.toString() + "失败，失败原因:", e);
             result.put(RESULT, EXEC_RESULT_FAIL);
             result.put(SysConstant.ERROR_MSG, e.getMessage());
@@ -95,7 +91,7 @@ public class DagExecutor {
                 .with("rdbms-task-job", RDBMSTaskJob::new);
         MemBasedTaskStorage taskStorage = new MemBasedTaskStorage();
         DagCacheUtils.putMemBasedTaskStorage(dagKey, taskStorage);
-        HashedTaskRouter taskRouter = new HashedTaskRouter(2);
+        HashedTaskRouter taskRouter = new HashedTaskRouter(4);
         PooledTaskRunner taskRunner = new PooledTaskRunner(16, taskRouter, taskStorage);
         DefaultTaskSubmitter submitter = new DefaultTaskSubmitter(taskRunner, taskMapper);
         DagCacheUtils.putDagDefaultTaskSubmitter(dagKey, submitter);
