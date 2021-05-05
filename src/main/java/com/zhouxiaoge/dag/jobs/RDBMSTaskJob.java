@@ -33,7 +33,7 @@ public class RDBMSTaskJob implements Job {
 
     @Override
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
-        log.info("------------------------------RDBMSTaskJob-{}-------------------------------------", taskTopo.getTaskId());
+        log.debug("-----------------------------RDBMSTaskJob-{}-------------------------------------", taskTopo.getTaskId());
         try {
             Map<String, Object> contextData = context.getContextData();
             Entity set = Entity.create("DAG_INFO")

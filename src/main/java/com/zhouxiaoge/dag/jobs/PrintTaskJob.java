@@ -32,10 +32,9 @@ public class PrintTaskJob implements Job {
     @Override
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
         try {
-            log.info("------------------------------PrintTaskJob-{}-------------------------------------", taskTopo.getTaskId());
+            log.debug("-----------------------------PrintTaskJob-{}-------------------------------------", taskTopo.getTaskId());
             Map<String, Object> contextData = context.getContextData();
-            System.out.println(taskTopo.getTask().getId());
-            System.out.println("PrintTaskJob-->" + context.getBatchId() + ":" + contextData);
+            log.debug("PrintTaskJob-->" + context.getBatchId() + ":" + contextData);
             return Promise.of(new DefaultTaskResult(taskTopo.getTaskId(), null, contextData));
         } catch (Exception e) {
             log.error("执行异常", e);

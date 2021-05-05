@@ -1,9 +1,7 @@
 package com.zhouxiaoge.dag.restful;
 
 import com.alibaba.fastjson.JSONObject;
-import com.zhouxiaoge.dag.models.Task;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 

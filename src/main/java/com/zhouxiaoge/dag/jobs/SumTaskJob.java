@@ -31,7 +31,7 @@ public class SumTaskJob implements Job {
 
     @Override
     public Promise<TaskResult, Exception> run(ExecutionContext context) {
-        log.info("------------------------------SumTaskJob-{}-------------------------------------", taskTopo.getTaskId());
+        log.debug("-----------------------------SumTaskJob-{}-------------------------------------", taskTopo.getTaskId());
         try {
             Map<String, Object> contextData = context.getContextData();
             for (String s : contextData.keySet()) {
